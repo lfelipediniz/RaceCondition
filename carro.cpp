@@ -12,6 +12,7 @@ mutex pitstop_mutex;  // Mutex para sincronizar o pitstop
 #define S 2
 #define M 1.2
 #define H 1.5
+#define DISTANCIA_TOTAL 1000  // Distância total da corrida (por exemplo, 100 metros ou 100 voltas)
 
 class Pneu {
 public:
@@ -77,26 +78,56 @@ public:
         this->pneu = pneu;
     }
 
-    // Método para mover o carro
-    void mover() {
-        while (true) {
-            // Simula o movimento do carro somando a posição de acordo com a velocidade do pneu
+    // Método para simular o movimento do carro
+    void correr() {
+        while (posicao < DISTANCIA_TOTAL) {
+            // Simula o desgaste dos pneus
+            pneu->atualizarDesgaste();
+
+            // Move o carro de acordo com a velocidade do pneu
             posicao += pneu->Velocidade;
 
-            // Atualizar o desgaste do pneu a cada volta
-            pneu->atualizarDesgaste();
+            // Se o desgaste atingir 10, o carro vai para o pitstop
             if (pneu->Desgaste >= 10.0f) {
-                cout << "Carro " << id << " - Pitstop necessário! Troca de pneus." << endl;
-                pneu->trocarPneu();  // Troca o pneu quando o desgaste atinge 10
+                fazerPitstop();
             }
 
-            // Exibir o status
-            cout << "Carro " << id << " - Posição: " << posicao 
-                      << " - Desgaste do pneu: " << pneu->Desgaste << endl;
+            cout << "Carro " << id << " - Posição: " << posicao << " - Desgaste do pneu: " << pneu->Desgaste << endl;
 
-            // Simula o tempo de corrida (pausa)
-            this_thread::sleep_for(chrono::seconds(1));
+            // Atraso para simular o tempo de uma volta
+            this_thread::sleep_for(chrono::milliseconds(500));
         }
+
+        cout << "Carro " << id << " completou a corrida!" << endl;
+    }
+
+    // Método para simular o pitstop (onde o carro troca os pneus)
+    void fazerPitstop() {
+        lock_guard<mutex> lock(pitstop_mutex);  // Garantir que o pitstop é feito de forma sincronizada
+        cout << "Carro " << id << " está fazendo pitstop!" << endl;
+        this_thread::sleep_for(chrono::seconds(2));  // Simula o tempo do pitstop
+
+        // Trocar os pneus
+        pneu->trocarPneu();
     }
 };
 
+int main() {
+    // Criando pneus para cada carro
+    Pneu pneu1('s');  // Soft
+    Pneu pneu2('m');  // Medium
+
+    // Criando carros
+    Carro carro1(1, &pneu1);
+    Carro carro2(2, &pneu2);
+
+    // Criando threads para os carros
+    thread t1(&Carro::correr, &carro1);
+    thread t2(&Carro::correr, &carro2);
+
+    // Espera as threads terminarem
+    t1.join();
+    t2.join();
+
+    return 0;
+}
