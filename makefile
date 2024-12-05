@@ -1,33 +1,27 @@
-# Definindo o compilador e as flags
-CXX = g++
-CXXFLAGS = -std=c++11 -pthread
-
-# Diretórios de origem e de objetos
-SRCDIR = .
-OBJDIR = obj
-
-# Arquivos fonte
-SOURCES = $(SRCDIR)/Carro.cpp $(SRCDIR)/Jogo.cpp $(SRCDIR)/main.cpp
-
-# Arquivos objeto
-OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-
 # Nome do executável
 EXEC = jogo
 
-# Regra para compilar o executável
-$(EXEC): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# Compilador
+CXX = g++
 
-# Regra para compilar arquivos .cpp em arquivos .o
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(OBJDIR)  # Cria o diretório de objetos, se não existir
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Flags de compilação
+CXXFLAGS = -Wall -std=c++20
 
-# Regra para limpar os arquivos gerados
+# Objetos
+OBJ = carro.o jogo.o
+
+# Regra principal
+$(EXEC): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(EXEC) $(OBJ)
+
+# Compilar carro.o
+carro.o: carro.cpp carro.h
+	$(CXX) $(CXXFLAGS) -c carro.cpp
+
+# Compilar jogo.o
+jogo.o: jogo.cpp jogo.h
+	$(CXX) $(CXXFLAGS) -c jogo.cpp
+
+# Limpeza
 clean:
-	rm -rf $(OBJDIR) $(EXEC)
-
-# Regra para executar o programa
-run: $(EXEC)
-	./$(EXEC)
+	rm -f $(OBJ) $(EXEC)

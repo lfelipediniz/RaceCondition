@@ -7,9 +7,11 @@
 #include <string>  // Para usar std::string
 #include <atomic>
 #include <thread>
+#include <mutex>
 
 using namespace std;
 
-atomic<bool>& desejaPitStop; 
+atomic<bool> desejaPitStop(false);
+mutex semaforo;
 
 #endif

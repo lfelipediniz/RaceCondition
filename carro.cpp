@@ -68,8 +68,7 @@ public:
     float distanciaPercorrida;
     float velocidade;
 
-    Carro(string nome, char tipoPneu) {
-        Nome = nome;
+    Carro(char tipoPneu) {
         pneu = new Pneu(tipoPneu);
         distanciaPercorrida = 0.0;
 
@@ -91,9 +90,14 @@ public:
             cin >> EscolhaFazerPitStop; //s ou n
 
             if (desejaPitStop.load(memory_order_relaxed) == true){ //significa que o usuário quer fazer o pitstop
-                FazerPitStop('s');
+                semaforo.lock(); //tentar acessar o PitStop
+                FazerPitStop('s'); 
 
-                FezPitStop = true;
+                //obs aqui tem que ver como é que vai fazer para descobrir pela E/S qual o tipo de pneu que ele vai colocar
+
+                semaforo.unlock();
+
+                desejaPitStop.store(false, memory_order_relaxed); //coloca como falso
             }
 
             float velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide

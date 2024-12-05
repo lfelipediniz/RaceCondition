@@ -10,7 +10,7 @@
 
 class Carro{
 public:
-    Carro(string nome, char tipoPneu);
+    Carro(char tipoPneu);
     void FazerPitStop(char TipoPneu);
     void Correr();
 };
