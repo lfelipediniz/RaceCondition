@@ -4,14 +4,21 @@
 #include <chrono>
 #include <random>
 
+#include <atomic>
+
+#include <semaphore>
+
+#include "carro.h"
+#include "jogo.h"
+
 using namespace std;
 
 mutex pitstop_mutex;  // Mutex para sincronizar o pitstop
 mutex user_input_mutex; // Mutex para controlar o input do usuário
 
-#define S 2
+#define S 2.0
 #define M 1.5 
-#define H 1.2
+#define H 1.0
 #define DISTANCIA_TOTAL 1000  // Distância total da corrida (em metros ou voltas)
 
 class Pneu {
@@ -23,8 +30,11 @@ public:
 
     Pneu(char TipoPneu) {
         this->TipoPneu = TipoPneu;
+
         this->NumeroVoltas = 0;
+        
         this->Desgaste = 0.0f;
+
         if (TipoPneu == 's') {
             Velocidade = S;  // Pneus soft são mais rápidos
         } else if (TipoPneu == 'm') {
@@ -56,41 +66,53 @@ public:
     string Nome;
     Pneu* pneu;
     float distanciaPercorrida;
-    bool fazendoPitStop;
-    bool fezPitStop;
+    float velocidade;
 
     Carro(string nome, char tipoPneu) {
         Nome = nome;
         pneu = new Pneu(tipoPneu);
-        distanciaPercorrida = 0.0f;
-        fazendoPitStop = false;
+        distanciaPercorrida = 0.0;
 
-        this->fezPitStop = false;
+        this->velocidade = (this->pneu)->CalcularVelocidade();
     }
 
     void FazerPitStop(char TipoPneu) {
         delete this->pneu;
 
         this->pneu = new Pneu(TipoPneu); //trocar o pneu para o novo escolhido
-
-        fazendoPitStop = false; //marcar que saiu do pistop
-        }
+    }
 
     void Correr() {
+        bool FezPitStop = false;
         while (distanciaPercorrida < DISTANCIA_TOTAL) {
-            if (fazendoPitStop){
-                
+            distanciaPercorrida += velocidade; //aumentar a distância percorrida baseada na velocidade
+
+            char EscolhaFazerPitStop;
+            cin >> EscolhaFazerPitStop; //s ou n
+
+            if (desejaPitStop.load(memory_order_relaxed) == true){ //significa que o usuário quer fazer o pitstop
+                FazerPitStop('s');
+
+                FezPitStop = true;
             }
-            if (!fazendoPitStop) {
-                float velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide
 
-                if (fezPitStop == 1){
-                    velocidade -= 0.3 ; //tempo que o carro perdeu durante a volta por ter feito um pitstop
-                }
+            float velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide
 
-                pneu->DesgastarPneu(); //desgastar o pneu
+            pneu->DesgastarPneu(); //desgastar o pneu
+            
+        }
+    }
+};
 
-                distanciaPercorrida += velocidade; //aumentar a distância percorrida
+class FazerES {
+    void escolhaPitstop() {
+        while (true) { //tem que ver isso daqui depois, pois se n isso daqui vai rodar pra sempre
+            char escolha;
+            cout << "Deseja fazer um pit stop? (s/n): ";
+            cin >> escolha;
+            
+            if (escolha == 's' || escolha == 'S') {
+                desejaPitStop.store(true, memory_order_relaxed); //deixa ela como verdadeira
             }
         }
     }
