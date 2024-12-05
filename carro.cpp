@@ -7,6 +7,8 @@
 
 using namespace std;
 
+//asd,nvas khdgacd
+
 mutex pitstop_mutex;  // Mutex para sincronizar o pitstop
 
 #define S 2
