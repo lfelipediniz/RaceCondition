@@ -3,13 +3,8 @@ using namespace std;
 #include <atomic>
 #include <vector>
 
-
-
-#include "jogo.h"
-#include "carro.h"
-
-atomic<bool> desejaPitStop(false); //declara uma região crítica atomica para o carro do usuário poder verificar se ele deve tentar entrar no PitStop ou não sem perder tempo tendo que esperar a operação de E/S
-mutex semaforo; //semáforo para acessar o PitStop
+#include "jogo.hpp"
+#include "carro.hpp"
 
 
 class Jogo {
@@ -25,7 +20,7 @@ public:
         }
     }
     
-    void Jogo::iniciar() {
+    void iniciar() {
         for (auto& carro : carros) { 
             threads.push_back(thread(&Carro::Correr, &carro)); // Iniciando threads de cada carro
         }
@@ -35,3 +30,11 @@ public:
         }
     }
 };
+
+int main() {
+    Jogo *jogo = new Jogo(2);
+
+    jogo->iniciar();
+}
+
+

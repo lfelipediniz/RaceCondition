@@ -8,8 +8,7 @@
 
 #include <semaphore>
 
-#include "carro.h"
-#include "jogo.h"
+#include "jogo.hpp"
 
 using namespace std;
 
@@ -82,9 +81,8 @@ public:
     }
 
     void Correr() {
-        bool FezPitStop = false;
         while (distanciaPercorrida < DISTANCIA_TOTAL) {
-            distanciaPercorrida += velocidade; //aumentar a distância percorrida baseada na velocidade
+            distanciaPercorrida += this->velocidade; //aumentar a distância percorrida baseada na velocidade
 
             char EscolhaFazerPitStop;
             cin >> EscolhaFazerPitStop; //s ou n
@@ -100,7 +98,7 @@ public:
                 desejaPitStop.store(false, memory_order_relaxed); //coloca como falso
             }
 
-            float velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide
+            this->velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide
 
             pneu->DesgastarPneu(); //desgastar o pneu
             

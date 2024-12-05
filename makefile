@@ -15,11 +15,11 @@ $(EXEC): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $(EXEC) $(OBJ)
 
 # Compilar carro.o
-carro.o: carro.cpp carro.h
+carro.o: carro.cpp 
 	$(CXX) $(CXXFLAGS) -c carro.cpp
 
 # Compilar jogo.o
-jogo.o: jogo.cpp jogo.h
+jogo.o: jogo.cpp 
 	$(CXX) $(CXXFLAGS) -c jogo.cpp
 
 # Limpeza
