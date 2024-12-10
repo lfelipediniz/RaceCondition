@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Este projeto consiste na implementação de um jogo de corrida de Fórmula 1 que simula uma competição entre o jogador e três corredores controlados por Inteligência Artificial (IA). O foco principal do projeto é a aplicação prática de conceitos de Sistemas Operacionais, especificamente o uso de **threads** e **semáforos** para gerenciar a concorrência e a sincronização entre diferentes partes do sistema.
+Este projeto consiste na implementação de um jogo de corrida de Fórmula 1 que simula uma competição entre o jogador e quatro corredores controlados por Inteligência Artificial (IA). O foco principal do projeto é a aplicação prática de conceitos de Sistemas Operacionais, especificamente o uso de **threads** e **semáforos** para gerenciar a concorrência e a sincronização entre diferentes partes do sistema.
 
 ## Objetivos
 
