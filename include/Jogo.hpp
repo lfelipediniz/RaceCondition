@@ -13,7 +13,7 @@ class Jogo{
         Player *jogador;
 
     public:
-        Jogo();
+        Jogo(string nomeJogador);
         ~Jogo();
 
         void iniciar();

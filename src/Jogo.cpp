@@ -5,9 +5,9 @@
 
 using namespace std;
 
-Jogo::Jogo()
+Jogo::Jogo(string nomeJogador)
 {
-    jogador = new Player("Jogador 1", 'm'); // começa com pneu médio
+    jogador = new Player(nomeJogador, 'm'); // começa com pneu médio
 }
 
 // desalocando o jogador

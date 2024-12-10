@@ -9,8 +9,11 @@ int main() {
     cout << "  Bem-vindo ao RaceCodition!\n";
     cout << "=====================================\n";
 
+    string nomeJogador;
+    cout << "Qual o nome do seu corredor: ";
+    getline(cin, nomeJogador);
     // Inicializa o jogo
-    Jogo jogo;
+    Jogo jogo(nomeJogador);
 
     // Inicia o jogo
     jogo.iniciar();

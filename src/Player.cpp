@@ -40,7 +40,7 @@ void Player::controlar(){
     while(true) {
         char escolha;
 
-        cout << "Jogador " << nome << ", deseja fazer pitstop? (s/n): ";
+        cout << "Corredor " << nome << ", deseja fazer pitstop? (s/n): ";
         cin >> escolha;
 
         if(escolha == 's' || escolha == 'S'){
