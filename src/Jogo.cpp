@@ -1,33 +1,38 @@
-#include "../include/Jogo.h"
-#include <iostream>
-#include <cctype>
-
 using namespace std;
 
-Jogo::Jogo(char tipoPneuInicial) : desejaPitStop(false), corridaTerminou(false) {
-    tipoPneuInicial = tolower(tipoPneuInicial);
-    if (tipoPneuInicial != 's' && tipoPneuInicial != 'm' && tipoPneuInicial != 'h') {
-        cout << "tipo de pneu inválido. usando pneu 's' por padrão." << endl;
-        tipoPneuInicial = 's';
+#include <atomic>
+#include <vector>
+
+#include "jogo.hpp"
+#include "carro.hpp"
+
+
+class Jogo {
+private:
+    vector<Carro> carros;
+    vector<thread> threads;
+
+public:
+    Jogo(int numCarros){
+        //criar uma lista de carros
+        for (int i = 0; i < 1; ++i) {
+            carros.push_back(Carro('s')); // Criando carros
+        }
     }
+    
+    void iniciar() {
+        for (auto& carro : carros) { 
+            threads.push_back(thread(&Carro::Correr, &carro)); // Iniciando threads de cada carro
+        }
 
-    tipoPneuEscolhido.store(tipoPneuInicial, memory_order_relaxed);
+        for (auto& t : threads) {
+            t.join(); // Espera todas as threads terminarem (neste caso, são loops infinitos)
+        }
+    }
+};
 
-    jogador = new Carro(tipoPneuInicial, pitstop_mutex, desejaPitStop, tipoPneuEscolhido, corridaTerminou);
-    inputHandler = new FazerES(desejaPitStop, tipoPneuEscolhido, corridaTerminou);
-}
+int main() {
+    Jogo *jogo = new Jogo(2);
 
-Jogo::~Jogo() {
-    delete jogador;
-    delete inputHandler;
-}
-
-void Jogo::iniciar() {
-
-    thread_carro = thread(&Carro::Correr, jogador);
-    thread_input = thread(&FazerES::escolhaPitstop, inputHandler);
-    thread_carro.join();
-
-    // aguarda a thread de entrada finalizar
-    thread_input.join();
+    jogo->iniciar();
 }

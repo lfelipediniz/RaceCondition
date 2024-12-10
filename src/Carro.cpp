@@ -1,148 +1,121 @@
-#include "../include/Carro.h"
+#include <iostream>
 #include <thread>
+#include <mutex>
 #include <chrono>
 #include <random>
-#include <iostream>
-#include <cctype>
+
+#include <atomic>
+
+#include <semaphore>
+
+#include "../include/Jogo.hpp"
 
 using namespace std;
+
+mutex pitstop_mutex;  // Mutex para sincronizar o pitstop
+mutex user_input_mutex; // Mutex para controlar o input do usuário
 
 #define S 2.0
 #define M 1.5 
 #define H 1.0
-#define DISTANCIA_TOTAL 1000  // distância total da corrida
+#define DISTANCIA_TOTAL 1000  // Distância total da corrida (em metros ou voltas)
 
 class Pneu {
 public:
     float Velocidade;
     int NumeroVoltas;
-    char TipoPneu;  // 's', 'm', 'h'
+    char TipoPneu;  // 's' para soft, 'm' para medium, 'h' para hard
     float Desgaste;
 
     Pneu(char TipoPneu) {
         this->TipoPneu = TipoPneu;
+
         this->NumeroVoltas = 0;
+        
         this->Desgaste = 0.0f;
 
         if (TipoPneu == 's') {
-            Velocidade = S;
+            Velocidade = S;  // Pneus soft são mais rápidos
         } else if (TipoPneu == 'm') {
-            Velocidade = M;
+            Velocidade = M;   // Pneus medium são medianos
         } else if (TipoPneu == 'h') {
-            Velocidade = H;
+            Velocidade = H;   // Pneus hard são mais lentos
         }
     }
 
     float CalcularVelocidade() {
-        return Velocidade - Desgaste * 0.1f;
+        // Aqui podemos ajustar a velocidade com base no desgaste
+        return Velocidade - Desgaste * 0.1f;  // Exemplo simples de cálculo de velocidade baseado no desgaste
     }
 
     void DesgastarPneu() {
+        // O desgaste depende do tipo do pneu
         if (TipoPneu == 's') {
-            Desgaste += 0.3f;
+            Desgaste += 0.3f;  // Pneus soft desgastam mais rápido
         } else if (TipoPneu == 'm') {
-            Desgaste += 0.2f;
+            Desgaste += 0.2f;  // Pneus medium desgastam a uma taxa média
         } else if (TipoPneu == 'h') {
-            Desgaste += 0.1f;
+            Desgaste += 0.1f;  // Pneus hard desgastam mais lentamente
         }
     }
 };
 
-Carro::Carro(char tipoPneu, mutex& semaforo_ref, atomic<bool>& desejaPitStop_ref, atomic<char>& tipoPneuEscolhido_ref, atomic<bool>& corridaTerminou_ref)
-    : semaforo(semaforo_ref), desejaPitStop(desejaPitStop_ref), tipoPneuEscolhido(tipoPneuEscolhido_ref), corridaTerminou(corridaTerminou_ref) {
-    pneu = new Pneu(tipoPneu);
-    distanciaPercorrida = 0.0f;
-    velocidade = pneu->CalcularVelocidade();
-}
+class Carro {
+public:
+    string Nome;
+    Pneu* pneu;
+    float distanciaPercorrida;
+    float velocidade;
 
-Carro::~Carro() {
-    delete pneu;
-}
+    Carro(char tipoPneu) {
+        pneu = new Pneu(tipoPneu);
+        distanciaPercorrida = 0.0;
 
-void Carro::FazerPitStop(char TipoPneu) {
-    cout << "fazendo pit stop para trocar o pneu para " << TipoPneu << endl;
-    delete pneu;
-    pneu = new Pneu(TipoPneu);
-    velocidade = pneu->CalcularVelocidade();
-    cout << "pit stop concluído. velocidade atual: " << velocidade << endl;
-}
+        this->velocidade = (this->pneu)->CalcularVelocidade();
+    }
 
-void Carro::Correr() {
-    while (distanciaPercorrida < DISTANCIA_TOTAL) {
-        // simula o tempo passando
-        this_thread::sleep_for(chrono::seconds(1));
+    void FazerPitStop(char TipoPneu) {
+        delete this->pneu;
 
-        // atualiza a distância percorrida
-        distanciaPercorrida += velocidade;
-        cout << "distância percorrida: " << distanciaPercorrida << " / " << DISTANCIA_TOTAL << endl;
+        this->pneu = new Pneu(TipoPneu); //trocar o pneu para o novo escolhido
+    }
 
-        // tem necessidade de pit stop?
-        if (desejaPitStop.load(memory_order_relaxed)) {
-            semaforo.lock();
+    void Correr() {
+        while (distanciaPercorrida < DISTANCIA_TOTAL) {
+            distanciaPercorrida += this->velocidade; //aumentar a distância percorrida baseada na velocidade
 
-            char tipo = tipoPneuEscolhido.load(memory_order_relaxed);
-            // garantir que o tipo seja minúsculo
-            tipo = tolower(tipo);
-            if (tipo != 's' && tipo != 'm' && tipo != 'h') {
-                cout << "tipo de pneu inválido. mantendo pneu atual." << endl;
-                tipo = pneu->TipoPneu; // mantém o pneu atual
+            char EscolhaFazerPitStop;
+            cin >> EscolhaFazerPitStop; //s ou n
+
+            if (desejaPitStop.load(memory_order_relaxed) == true){ //significa que o usuário quer fazer o pitstop
+                semaforo.lock(); //tentar acessar o PitStop
+                FazerPitStop('s'); 
+
+                //obs aqui tem que ver como é que vai fazer para descobrir pela E/S qual o tipo de pneu que ele vai colocar
+
+                semaforo.unlock();
+
+                desejaPitStop.store(false, memory_order_relaxed); //coloca como falso
             }
 
-            FazerPitStop(tipo);
+            this->velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide
 
-            semaforo.unlock();
-
-            desejaPitStop.store(false, memory_order_relaxed);
-        }
-
-        // atualiza a velocidade e o desgaste
-        velocidade = pneu->CalcularVelocidade();
-        pneu->DesgastarPneu();
-
-        // exibe o status atual
-        cout << "tipo de pneu: " << pneu->TipoPneu << ", desgaste: " << pneu->Desgaste << ", velocidade: " << velocidade << endl;
-
-        // verifica se o pneu estourou
-        if (pneu->Desgaste >= 10.0f) {
-            cout << "pneu estourou! você perdeu a corrida." << endl;
-            break;
+            pneu->DesgastarPneu(); //desgastar o pneu
+            
         }
     }
+};
 
-    if (distanciaPercorrida >= DISTANCIA_TOTAL) {
-        cout << "parabéns! você venceu a corrida!" << endl;
-    }
-
-    // sinaliza que a corrida terminou
-    corridaTerminou.store(true);
-}
-
-FazerES::FazerES(atomic<bool>& desejaPitStop_ref, atomic<char>& tipoPneuEscolhido_ref, atomic<bool>& corridaTerminou_ref)
-    : desejaPitStop(desejaPitStop_ref), tipoPneuEscolhido(tipoPneuEscolhido_ref), corridaTerminou(corridaTerminou_ref) {}
-
-void FazerES::escolhaPitstop() {
-    while (!corridaTerminou.load()) {
-        char escolha;
-        cout << "deseja fazer um pit stop? (s/n): ";
-        cin >> escolha;
-
-        if (escolha == 's' || escolha == 'S') {
-            desejaPitStop.store(true, memory_order_relaxed);
-            // pergunta o tipo de pneu
-            char tipo;
-            cout << "escolha o tipo de pneu para troca (s/m/h): ";
-            cin >> tipo;
-
-            // valida o tipo de pneu
-            tipo = tolower(tipo);
-            if (tipo != 's' && tipo != 'm' && tipo != 'h') {
-                cout << "tipo de pneu inválido. mantendo pneu atual." << endl;
-                // definindo um tipo padrão de pneu
-            } else {
-                tipoPneuEscolhido.store(tipo, memory_order_relaxed);
+class FazerES {
+    void escolhaPitstop() {
+        while (true) { //tem que ver isso daqui depois, pois se n isso daqui vai rodar pra sempre
+            char escolha;
+            cout << "Deseja fazer um pit stop? (s/n): ";
+            cin >> escolha;
+            
+            if (escolha == 's' || escolha == 'S') {
+                desejaPitStop.store(true, memory_order_relaxed); //deixa ela como verdadeira
             }
-        } 
-        // previne loop intenso
-        this_thread::sleep_for(chrono::milliseconds(100));
+        }
     }
-}
+};
