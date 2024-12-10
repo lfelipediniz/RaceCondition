@@ -82,6 +82,7 @@ void Carro::correr(){
 
 void Carro::verificarProgressoCorrida(){
     cout << "Distância percorrida por " << distanciaPercorrida << " metros\n";
+    cout << "Pneu atual: " << pneu->tipo << " com desgaste de " << pneu->desgaste << endl;
 
     if(distanciaPercorrida >= DISTANCIA_TOTAL){
         cout << "Ai toma!!! Carro chegou na linha de chegada!\n";

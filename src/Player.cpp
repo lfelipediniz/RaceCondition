@@ -64,7 +64,7 @@ char Player::escolherNovoPneu() {
         cin >> novoPneu;
 
         if(novoPneu == 's' || novoPneu == 'm' || novoPneu == 'h'){
-            return novoPneu
+            return novoPneu;
         }
         else{
             cout << "Tipo de pneu inválido. Tente novamente.\n";
