@@ -1,121 +1,92 @@
-#include <iostream>
+#include "../include/Carro.hpp"
 #include <thread>
-#include <mutex>
 #include <chrono>
-#include <random>
-
-#include <atomic>
-
-#include <semaphore>
-
-#include "../include/Jogo.hpp"
 
 using namespace std;
 
-mutex pitstop_mutex;  // Mutex para sincronizar o pitstop
-mutex user_input_mutex; // Mutex para controlar o input do usuário
+Pneu::Pneu(char tipo)
+{
+    this->tipo = tipo;
+    this->desgaste = 0;
 
-#define S 2.0
-#define M 1.5 
-#define H 1.0
-#define DISTANCIA_TOTAL 1000  // Distância total da corrida (em metros ou voltas)
+    if (tipo == 's'){
+        velocidadeBase = S;
+    }
+    else if (tipo == 'm') {
+        velocidadeBase = M;
+    }
+    else if (tipo == 'h'){
+        velocidadeBase = H;
+    }
+    else{
+        cout << "Tipo de pneu inválido. Usando pneu médio (M) por padrão.\n";
+        velocidadeBase = M; // setando o pneu médio como padrão
+        this->tipo = 'm';
+    }
+}
 
-class Pneu {
-public:
-    float Velocidade;
-    int NumeroVoltas;
-    char TipoPneu;  // 's' para soft, 'm' para medium, 'h' para hard
-    float Desgaste;
+float Pneu::calcularVelocidade(){
+    return velocidadeBase - desgaste * 0.1;
+}
 
-    Pneu(char TipoPneu) {
-        this->TipoPneu = TipoPneu;
+void Pneu::desgastar()
+{
+    if (tipo == 's') {
+        desgaste += 0.3f;
+    }
+    else if (tipo == 'm'){
+        desgaste += 0.2f;
+    }
+    else if (tipo == 'h'){
+        desgaste += 0.1f;
+    }
+}
 
-        this->NumeroVoltas = 0;
+Carro::Carro(char tipoPneu){
+    distanciaPercorrida = 0;
+    pneu = new Pneu(tipoPneu); // alocando o pneu dinamicaente
+}
+
+Carro::~Carro(){
+    if (pneu != nullptr){
+        delete pneu; 
+        pneu = nullptr;
+    }
+}
+
+void Carro::fazerPitStop(char novoPneu){
+    pitstopMutex.lock(); // trava o mutex para garantir que apenas um carro faça o pitstop por vez
+
+    delete pneu;
+    pneu = new Pneu(novoPneu);
+
+    cout << "Pit stop concluido. Pneu trocado para: " << novoPneu << endl;
+
+    // simulando o tempo de pit stop
+    this_thread::sleep_for(chrono::seconds(3));
+
+    pitstopMutex.unlock(); // destrava o mutex
+}
+
+void Carro::correr(){
+    while (distanciaPercorrida < DISTANCIA_TOTAL){
+        distanciaPercorrida += pneu->calcularVelocidade();
+
+        pneu->desgastar();
+        verificarProgressoCorrida();
         
-        this->Desgaste = 0.0f;
-
-        if (TipoPneu == 's') {
-            Velocidade = S;  // Pneus soft são mais rápidos
-        } else if (TipoPneu == 'm') {
-            Velocidade = M;   // Pneus medium são medianos
-        } else if (TipoPneu == 'h') {
-            Velocidade = H;   // Pneus hard são mais lentos
-        }
+        // setando o tempo de corrida para 1 segundo
+        this_thread::sleep_for(chrono::seconds(1));
     }
+}
 
-    float CalcularVelocidade() {
-        // Aqui podemos ajustar a velocidade com base no desgaste
-        return Velocidade - Desgaste * 0.1f;  // Exemplo simples de cálculo de velocidade baseado no desgaste
+void Carro::verificarProgressoCorrida(){
+    cout << "Distância percorrida por " << distanciaPercorrida << " metros\n";
+
+    if(distanciaPercorrida >= DISTANCIA_TOTAL){
+        cout << "Ai toma!!! Carro chegou na linha de chegada!\n";
+    } else if (pneu->desgaste >= 10){
+        cout << "Pneu furou! Você está fora da corrida\n";
+        distanciaPercorrida = DISTANCIA_TOTAL;
     }
-
-    void DesgastarPneu() {
-        // O desgaste depende do tipo do pneu
-        if (TipoPneu == 's') {
-            Desgaste += 0.3f;  // Pneus soft desgastam mais rápido
-        } else if (TipoPneu == 'm') {
-            Desgaste += 0.2f;  // Pneus medium desgastam a uma taxa média
-        } else if (TipoPneu == 'h') {
-            Desgaste += 0.1f;  // Pneus hard desgastam mais lentamente
-        }
-    }
-};
-
-class Carro {
-public:
-    string Nome;
-    Pneu* pneu;
-    float distanciaPercorrida;
-    float velocidade;
-
-    Carro(char tipoPneu) {
-        pneu = new Pneu(tipoPneu);
-        distanciaPercorrida = 0.0;
-
-        this->velocidade = (this->pneu)->CalcularVelocidade();
-    }
-
-    void FazerPitStop(char TipoPneu) {
-        delete this->pneu;
-
-        this->pneu = new Pneu(TipoPneu); //trocar o pneu para o novo escolhido
-    }
-
-    void Correr() {
-        while (distanciaPercorrida < DISTANCIA_TOTAL) {
-            distanciaPercorrida += this->velocidade; //aumentar a distância percorrida baseada na velocidade
-
-            char EscolhaFazerPitStop;
-            cin >> EscolhaFazerPitStop; //s ou n
-
-            if (desejaPitStop.load(memory_order_relaxed) == true){ //significa que o usuário quer fazer o pitstop
-                semaforo.lock(); //tentar acessar o PitStop
-                FazerPitStop('s'); 
-
-                //obs aqui tem que ver como é que vai fazer para descobrir pela E/S qual o tipo de pneu que ele vai colocar
-
-                semaforo.unlock();
-
-                desejaPitStop.store(false, memory_order_relaxed); //coloca como falso
-            }
-
-            this->velocidade = pneu->CalcularVelocidade(); //calcular qual que vai ser a velocide
-
-            pneu->DesgastarPneu(); //desgastar o pneu
-            
-        }
-    }
-};
-
-class FazerES {
-    void escolhaPitstop() {
-        while (true) { //tem que ver isso daqui depois, pois se n isso daqui vai rodar pra sempre
-            char escolha;
-            cout << "Deseja fazer um pit stop? (s/n): ";
-            cin >> escolha;
-            
-            if (escolha == 's' || escolha == 'S') {
-                desejaPitStop.store(true, memory_order_relaxed); //deixa ela como verdadeira
-            }
-        }
-    }
-};
+}

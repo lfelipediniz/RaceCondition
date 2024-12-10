@@ -26,6 +26,8 @@ Este projeto consiste na implementação de um jogo de corrida de Fórmula 1 que
 
 - **Cálculo da Velocidade Instantânea:**
   - `Velocidade = ConstanteDeVelocidade - (Desgaste * 0.1)`
+- O Jogo deverá sempre esperar um tipo de pneu, então o tereminal sempre ficará aberto para que o usuario digite 's', 'm' ou 'h'. Ao digitar o tipo de pneu, se o pitstop estiver livre (só haverá 1), o jogador deverá fica nele por 3 segundos em sleep, e nenhum outro corredor poderá acessar o pitstop neste periodo.
+- Caso o jogador não entre no pitstop a tempo, ele perderá a corrida ficando na ultima posição e apenas assistirá as IAS competindo
 
 ### Pit Stop
 

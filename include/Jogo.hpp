@@ -2,14 +2,21 @@
 #ifndef JOGO_H
 #define JOGO_H
 
-#include <string>  // Para usar std::string
-#include <atomic>
+#include "Player.hpp"
 #include <thread>
-#include <mutex>
+#include <atomic>
 
 using namespace std;
 
-atomic<bool> desejaPitStop(false);
-mutex semaforo;
+class Jogo{
+    private:
+        Player *jogador;
+
+    public:
+        Jogo();
+        ~Jogo();
+
+        void iniciar();
+};
 
 #endif
