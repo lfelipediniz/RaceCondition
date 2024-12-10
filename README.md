@@ -116,7 +116,7 @@ Este projeto consiste na implementação de um jogo de corrida de Fórmula 1 que
 |---------------------------------------|-------------------------|
 | Enzo Tono Morente                     | 14568476                |
 | João Pedro Alves Notare Godoy         | 14582076                |
-| Letícia Barbosa Neves                 |                         |
+| Letícia Barbosa Neves                 | 14588659                |
 | Luiz Felipe Diniz Costa               | 13782032                |
 
 
