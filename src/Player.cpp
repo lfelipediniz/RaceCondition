@@ -5,9 +5,9 @@
 
 using namespace std;
 
-Player::Player(string nome, char tipoPneuInicial){
+Player::Player(string nome, char tipoPneuInicial, mutex &Semaforo): pitstopMutex(Semaforo) {
     this->nome = nome;
-    this->carro = new Carro(tipoPneuInicial);
+    this->carro = new Carro(tipoPneuInicial, Semaforo);
 }
 
 Player::~Player(){
@@ -29,18 +29,16 @@ Carro *Player::getCarro(){
 
 void Player::controlar(){
     while(true) {
+        printf("aksubdgasdasd");
         char escolha;
 
         cout << "Você pode entrar no pitstop a qulquer momento, digite 's', 'm' ou 'h' para escolher o tipo de pneu.\n";
         cin >> escolha;
 
         if(tolower(escolha) == 's' || tolower(escolha) == 'm' || tolower(escolha) == 'h'){
-            cout << nome << " está no pitstop trocando o pneu para " << escolha << ".\n";
-
-            carro->fazerPitStop(escolha);
+            carro->fazerPitStop(escolha); //fazer o pitstop
         }
 
         this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para a próxima iteração
     }
 }
-

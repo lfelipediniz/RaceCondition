@@ -4,8 +4,7 @@
 
 using namespace std;
 
-Pneu::Pneu(char tipo)
-{
+Pneu::Pneu(char tipo) {
     this->tipo = tipo;
     this->desgaste = 0;
 
@@ -29,8 +28,7 @@ float Pneu::calcularVelocidade(){
     return velocidadeBase - desgaste * 0.1;
 }
 
-void Pneu::desgastar()
-{
+void Pneu::desgastar() {
     if (tipo == 's') {
         desgaste += 0.3f;
     }
@@ -42,10 +40,12 @@ void Pneu::desgastar()
     }
 }
 
-Carro::Carro(char tipoPneu){
-    distanciaPercorrida = 0;
-    pneu = new Pneu(tipoPneu); // alocando o pneu dinamicaente
-}
+//gente, é assim que faz inicialização em C++, se n fizer assim pode dar ruim (principalmente com o semáforo)
+Carro::Carro(char tipoPneu, mutex &Semaforo) 
+    : pneu(new Pneu(tipoPneu)),
+      distanciaPercorrida(0.0),
+      pitstopMutex(Semaforo)
+    {}
 
 Carro::~Carro(){
     if (pneu != nullptr){
@@ -68,18 +68,6 @@ void Carro::fazerPitStop(char novoPneu){
     pitstopMutex.unlock(); // destrava o mutex
 }
 
-void Carro::correr(){
-    while (distanciaPercorrida < DISTANCIA_TOTAL){
-        distanciaPercorrida += pneu->calcularVelocidade();
-
-        pneu->desgastar();
-        verificarProgressoCorrida();
-        
-        // setando o tempo de corrida para 1 segundo
-        this_thread::sleep_for(chrono::seconds(1));
-    }
-}
-
 void Carro::verificarProgressoCorrida(){
     cout << "Distância percorrida por " << distanciaPercorrida << " metros\n";
     cout << "Pneu atual: " << pneu->tipo << " com desgaste de " << pneu->desgaste << endl;
@@ -89,5 +77,17 @@ void Carro::verificarProgressoCorrida(){
     } else if (pneu->desgaste >= 10){
         cout << "Pneu furou! Você está fora da corrida\n";
         distanciaPercorrida = DISTANCIA_TOTAL;
+    }
+}
+
+void Carro::correr(){
+    while (distanciaPercorrida < DISTANCIA_TOTAL){
+        distanciaPercorrida += pneu->calcularVelocidade();
+
+        pneu->desgastar();
+        verificarProgressoCorrida();
+        
+        // setando o tempo de corrida para 1 segundo
+        this_thread::sleep_for(chrono::seconds(1)); 
     }
 }

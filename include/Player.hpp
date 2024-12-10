@@ -12,10 +12,10 @@ class Player
 private:
     string nome;
     Carro *carro;
-    atomic<bool> desejaPitStop;
+    mutex &pitstopMutex;
 
 public:
-    Player(string nome, char tipoPneuInicial);
+    Player(string nome, char tipoPneuInicial, mutex &Semaforo);
     ~Player();
 
     string getNome();    

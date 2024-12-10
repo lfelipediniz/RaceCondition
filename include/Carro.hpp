@@ -12,8 +12,7 @@
 
 using namespace std;
 
-class Pneu
-{
+class Pneu {
 public:
     char tipo; // s (Soft), m (Medium) ou h (Hard)
     float velocidadeBase;
@@ -25,14 +24,13 @@ public:
     void desgastar();           // incrementa o desgaste do pneu
 };
 
-class Carro
-{
+class Carro{
 public:
     Pneu *pneu;
     float distanciaPercorrida;
-    mutex pitstopMutex;
+    mutex &pitstopMutex;
 
-    Carro(char tipoPneu);
+    Carro(char tipoPneu, mutex &pitstopMutex);
     ~Carro(); // libera memória do pneu
 
     void fazerPitStop(char novoPneu);

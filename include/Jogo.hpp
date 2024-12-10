@@ -8,12 +8,10 @@
 
 using namespace std;
 
-// enum class DesejaEntrarNoPitStop(s, m, h, NotPit); //enumerador para definir os valores de quando o jogador pode entrar no pitstop
-
-
 class Jogo{
     private:
         Player *jogador;
+        mutex pitstopMutex;
 
     public:
         Jogo(string nomeJogador);
