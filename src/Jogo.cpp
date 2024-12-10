@@ -27,14 +27,6 @@ void Jogo::iniciar()
 
     while (jogador->getCarro()->distanciaPercorrida < DISTANCIA_TOTAL)
     {
-        // ve se o jogador quer fazer pitstop
-        if (jogador->querPitStop())
-        {
-            char novoPneu = jogador->escolherNovoPneu();
-            jogador->getCarro()->fazerPitStop(novoPneu);
-
-            jogador->resetPitStop();
-        }
         this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para encerrar as threads
     }
 

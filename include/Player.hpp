@@ -20,10 +20,7 @@ public:
 
     string getNome();    
     Carro *getCarro();   
-    bool querPitStop();  
-    void resetPitStop(); 
-    void controlar();   
-    char escolherNovoPneu();
+    void controlar();
 };
 
 #endif

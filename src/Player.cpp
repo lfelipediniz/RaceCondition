@@ -7,7 +7,6 @@ using namespace std;
 
 Player::Player(string nome, char tipoPneuInicial){
     this->nome = nome;
-    this->desejaPitStop = false;
     this->carro = new Carro(tipoPneuInicial);
 }
 
@@ -27,47 +26,21 @@ Carro *Player::getCarro(){
     return carro;
 }
 
-bool Player::querPitStop(){
-    return desejaPitStop;
-}
-
-// resetando a flag
-void Player::resetPitStop(){
-    desejaPitStop = false;
-}
 
 void Player::controlar(){
     while(true) {
         char escolha;
 
-        cout << "Corredor " << nome << ", deseja fazer pitstop? (s/n): ";
+        cout << "Você pode entrar no pitstop a qulquer momento, digite 's', 'm' ou 'h' para escolher o tipo de pneu.\n";
         cin >> escolha;
 
-        if(escolha == 's' || escolha == 'S'){
-            desejaPitStop = true;
-            cout << nome << " deseja fazer pitstop.\n";
+        if(tolower(escolha) == 's' || tolower(escolha) == 'm' || tolower(escolha) == 'h'){
+            cout << nome << " está no pitstop trocando o pneu para " << escolha << ".\n";
+
+            carro->fazerPitStop(escolha);
         }
 
         this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para a próxima iteração
     }
 }
 
-char Player::escolherNovoPneu() {
-    char novoPneu;
-
-    while(true){
-        cout << "Escolha o tipo de pneu pra fazer o pitstop?\n";
-        cout << "s - Soft\n";
-        cout << "m - Medium\n";
-        cout << "h - Hard\n";
-        cout << "Escolha: ";
-        cin >> novoPneu;
-
-        if(novoPneu == 's' || novoPneu == 'm' || novoPneu == 'h'){
-            return novoPneu;
-        }
-        else{
-            cout << "Tipo de pneu inválido. Tente novamente.\n";
-        }
-    }
-}
