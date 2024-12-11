@@ -26,6 +26,7 @@ void Jogo::iniciar() {
     IAs.emplace_back(new IA("Max Verstapo", 's', pitstopMutex));
     IAs.emplace_back(new IA("Leo Leclerc", 'm', pitstopMutex));
     IAs.emplace_back(new IA("Luiz Hamilltown", 'h', pitstopMutex));
+    IAs.emplace_back(new IA("Bortolleto", 's', pitstopMutex));
 
     for (auto& ia:IAs){
         threads.emplace_back(&Carro::correr, ia->getCarro());
@@ -54,22 +55,38 @@ void Jogo::iniciar() {
     cout << "Fim da corrida! Parabéns, " << jogador->getNome() << "!\n";
 }
 
+// Função para ordenar os carros com base na posição
+vector<Carro*> ordenarClassificacao(vector<Carro*> carros) {
+    vector<Carro*> classificacao = carros;
+    sort(classificacao.begin(), classificacao.end(), [](const Carro *a, const Carro *b) {
+        return a->distanciaPercorrida > b->distanciaPercorrida;
+    });
+    return classificacao;
+}
+
 // printando a tabela de classificação dos carrinhos
-void exibirTabela(const vector<Carro*> carros) {
+void exibirTabela(const vector<Carro*> classificacao) {
     cout << "\nClassificação:\n";
     cout << "+---------+----------------------+---------------+-----------+-----------+\n";
     cout << "| Posição |        Carro         | Desgaste Pneu | Tipo Pneu |  Pitstop  |\n";
     cout << "+---------+----------------------+---------------+-----------+-----------+\n";
 
     
-
-    for (const auto &carro : carros) {
-        cout << "| " << setw(7) << (i + 1) << " | "
-            << setw(20) << carro->GetNome() << " | "
-            << setw(13) << carro->pneu->desgaste << " | "
-            << setw(9) << carro->pneu->tipo << " | "
-            << setw(9) << (carro->DentroPitStop.load() ? "Sim" : "Nao") << " |\n";
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "| " << std::setw(7) << (i + 1) << " | "
+                  << std::setw(20) << classificacao[i]->GetNome() << " | "
+                  << std::setw(13) << classificacao[i]->pneu->desgaste << " | "
+                  << std::setw(9) << classificacao[i]->pneu->tipo << " | "
+                  << std::setw(9) << (classificacao[i]->DentroPitStop.load() ? "Sim" : "Nao") << " |\n";
     }
+
+    // for (const auto &carro : carros) {
+    //     cout << "| " << setw(7) << (i + 1) << " | "
+    //         << setw(20) << carro->GetNome() << " | "
+    //         << setw(13) << carro->pneu->desgaste << " | "
+    //         << setw(9) << carro->pneu->tipo << " | "
+    //         << setw(9) << (carro->DentroPitStop.load() ? "Sim" : "Nao") << " |\n";
+    // }
 
     cout << "+---------+----------------------+---------------+-----------+-----------+\n";
 }
@@ -107,7 +124,9 @@ void Jogo::desenharPista(const vector<Carro*> carros) {
             cout << "#\n";
         }
 
-        exibirTabela(carros);
+        vector<Carro*> classificacao = ordenarClassificacao(carros);
+
+        exibirTabela(classificacao);       
         this_thread::sleep_for(chrono::seconds(1)); 
     }
 
