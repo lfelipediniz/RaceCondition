@@ -1,5 +1,7 @@
 # RaceCondition - Manual do Jogo
-![Capa do Jogo](/imgs/racecondition.png)
+<p align="center">
+  <img src="/imgs/racecondition.png" alt="Capa do jogo" width="300">
+</p>
 
 ## Índice
 1. [Introdução](#introdução)
@@ -10,8 +12,6 @@
 6. [Implementação de Threads e Semáforos](#implementação-de-threads-e-semaforos)
 7. [Implementação das Classes](#implementação-das-classes)
 8. [Considerações Finais](#considerações-finais)
-9. [Anexos](#anexos)
-10. [Contato](#contato)
 
 
 ## Introdução
