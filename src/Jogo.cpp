@@ -41,16 +41,17 @@ void Jogo::iniciar() {
 
     // cria uma thread para cada um deles
     for (auto& ia:IAs){
-        threads.emplace_back(&Carro::correr, ia->getCarro());
-        threads.emplace_back(&IA::controlar, ia);
-        Carros.emplace_back(ia->getCarro());
+        threads.emplace_back(&Carro::correr, ia->getCarro()); //cria uma thread do carro
+        threads.emplace_back(&IA::controlar, ia); //cria uma thread do controlador da ia
+        Carros.emplace_back(ia->getCarro()); //adicionar o carro na lista de carros
     }
 
     // cria todas as threads para o funcionamento do jogador 
-    threads.emplace_back(&Carro::correr, jogador->getCarro());
-    Carros.emplace_back(jogador->getCarro());
-    threads.emplace_back(&Player::controlar, jogador);
-    threads.emplace_back(&Jogo::desenharPista, this, Carros);
+    threads.emplace_back(&Carro::correr, jogador->getCarro()); //cria uma thread para o carro do jogador
+    Carros.emplace_back(jogador->getCarro()); //adiciona o carro do jogador na lista de carros
+
+    threads.emplace_back(&Player::controlar, jogador); //cria uma trehad para o controlador do jogador
+    threads.emplace_back(&Jogo::desenharPista, this, Carros); //cria uma thread para desenhar a pista
     
     // esperando todas as threads terminarem
     for (auto& t:threads){

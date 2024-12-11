@@ -15,7 +15,7 @@ Luiz Felipe Diniz Costa - 13782032
 
 using namespace std;
 
-int GerarValorAleatorio(int inicio, int fim){
+int GerarValorAleatorio(int inicio, int fim){ //função para gerar um inteiro aleatório de início a fim
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> distrib(inicio, fim);
@@ -23,27 +23,24 @@ int GerarValorAleatorio(int inicio, int fim){
     return distrib(gen);
 }
 
-//
+//função para retornar um pneu aleatorio
 char PneuAleatorio(){
     int numero_aleatorio = GerarValorAleatorio(1, 3);
 
-    char NovoPneu;
-
     if (numero_aleatorio == 1){
-        NovoPneu = 's';
+        return 's';
     }
     else if (numero_aleatorio == 2){
-        NovoPneu = 'm';
+        return 'm';
     }
-    else{NovoPneu = 'h';}
-
-    return NovoPneu;
+    else{return 'h';}
 }
 
+//setar os semáforos e atomic passados
 IA::IA(string nome, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo), PosicaoDoCarro(PosicaoDoCarro)  {
-    this->nome = nome;
-    char tipoPneuInicial = PneuAleatorio();
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada, PosicaoDoCarro);
+    this->nome = nome; //setar o nome
+    char tipoPneuInicial = PneuAleatorio(); //pegar um pneu aleatório
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada, PosicaoDoCarro); //criar um carro
 
     this->ResetarPneu = GerarValorAleatorio(2, 9); //gerar aleatoriamente quando que o pneu deve ser resetado
 }
@@ -55,7 +52,7 @@ IA::~IA(){
     }
 }
 
-string IA::getNome(){
+string IA::getNome(){ //retorna o nome
     return nome;
 }
 
@@ -66,12 +63,13 @@ Carro *IA::getCarro(){
 
 void IA::controlar() {
     while(true) {
-        if (this->carro->ChegouNaLargada.load()) break;
+        //caso o carro tenha acabado a corrida, finalizar a trhead que o controla
+        if (this->carro->ChegouNaLargada.load()) break; 
 
-        if (carro->pneu->desgaste >= this->ResetarPneu){
+        if (carro->pneu->desgaste >= this->ResetarPneu){ //verificar se deve fazer um pitstop
             carro->fazerPitStop(PneuAleatorio()); //fazer o pitstop
 
-            this->ResetarPneu = GerarValorAleatorio(2, 9);
+            this->ResetarPneu = GerarValorAleatorio(2, 9); //gerar um novo valor para fazer o pitstop
         }
 
         this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para a próxima iteração

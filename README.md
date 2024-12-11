@@ -13,70 +13,49 @@
 9. [Anexos](#anexos)
 10. [Contato](#contato)
 
----
 
 ## Introdução
 
-**RaceCondition** é uma simulação de corrida de Fórmula 1 desenvolvida para a disciplina de Sistemas Operacionais na Universidade de São Paulo (USP). O jogo permite que o jogador concorra contra quatro corredores controlados por Inteligência Artificial (IA). O principal foco do projeto é a aplicação prática de conceitos de **threads** e **semaforos** para gerenciar a concorrência e sincronização entre diferentes componentes do sistema.
+**RaceCondition** é uma simulação de corrida de Fórmula 1. O jogo permite que o jogador concorra contra quatro corredores controlados por Inteligência Artificial (IA). O principal foco do projeto é a aplicação prática de conceitos de **threads** e **semaforos** para gerenciar a concorrência e sincronização entre diferentes componentes do sistema.
 
-O objetivo é proporcionar uma experiência interativa onde o jogador deve gerenciar estratégias de pit stop, escolhendo tipos de pneus adequados para vencer a corrida, enquanto lida com as decisões automáticas das IAs. A simulação destaca como múltiplas threads podem operar simultaneamente e como semáforos são utilizados para controlar o acesso a recursos compartilhados, garantindo um funcionamento harmonioso do jogo.
-
----
+O objetivo é proporcionar uma experiência interativa onde o jogador deve gerenciar estratégias de pit stop, escolhendo tipos de pneus adequados para vencer a corrida, enquanto lida com as decisões automáticas das IAs. A simulação destaca como múltiplas threads podem operar simultaneamente e como semáforos são utilizados para controlar o acesso a recursos compartilhados. 
 
 ## Requisitos
 
-Antes de iniciar a instalação, certifique-se de que seu sistema atende aos seguintes requisitos:
-
-- **Sistema Operacional:** Linux, macOS ou Windows (com suporte ao `make` e ferramentas de compilação).
 - **Compilador C++:** GCC ou Clang com suporte a C++20.
 - **Make:** Utilitário de construção para compilar o projeto.
-- **Bibliotecas Padrão C++:** Incluídas na instalação do compilador.
 
----
+
 
 ## Instalação
 
-### Passo 1: Clonar o Repositório
-
-Primeiramente, clone o repositório do projeto para o seu ambiente local:
+### Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/racecondition.git
-cd racecondition
+git clone https://github.com/lfelipediniz/RaceCondition.git
 ```
 
-### Passo 2: Compilar o Projeto
+```bash
+cd RaceCondition
+```
 
-Utilize o `make` para compilar o projeto. O `Makefile` está configurado para compilar todos os arquivos fonte e gerar o executável.
+### Compile o jogo e execute
 
 ```bash
 make
 ```
 
-Após a compilação bem-sucedida, o executável será gerado no diretório `build`.
-
-### Passo 3: Executar o Jogo
-
-Para iniciar o jogo, execute o seguinte comando:
-
 ```bash
 make run
 ```
-
-Ou diretamente pelo executável:
-
-```bash
-./build/jogo
-```
-
----
 
 ## Como Jogar
 
 ### Início da Corrida
 
-1. **Nome do Corredor:**
-   - Ao iniciar o jogo, você será solicitado a inserir o nome do seu corredor.
+1. **Nome do Corredor**
+    Ao iniciar o jogo, você será deverá inserir o nome do seu corredor.
+
 
 2. **Escolha do Tipo de Pneu Inicial:**
    - Selecione o tipo de pneu para iniciar a corrida:
@@ -96,17 +75,14 @@ Ou diretamente pelo executável:
     - **s**: Trocar para pneus **SOFT**.
     - **m**: Trocar para pneus **MEDIUM**.
     - **h**: Trocar para pneus **HARD**.
-  - O pit stop ficará ocupado por 3 segundos, durante os quais nenhum outro carro poderá utilizá-lo.
+  - O pit stop ficará ocupado por 3 segundos, durante os quais nenhum outro carro poderá usa-lo.
 
 - **Condições de Vitória:**
-  - A corrida termina quando um dos corredores alcança a distância total de 100 metros.
+  - A corrida termina quando um dos corredores alcança a distância total de 100 kilometros.
   - Se um pneu estourar (desgaste atingir 10), o carro é eliminado da corrida.
 
 ### Final da Corrida
-
-- Após a conclusão da corrida, uma mensagem será exibida com os resultados finais e você será convidado a finalizar o jogo.
-
----
+Quando oa corrida acaba, uma mensagem é exibida com os resultados finais e você será convidado a finalizar o jogo.
 
 ## Cálculos e Lógica do Jogo
 
@@ -124,9 +100,9 @@ Se o desgaste de um pneu atingir **10**, o pneu estoura e o carro é eliminado d
 
 A velocidade de cada carro é calculada com base no tipo de pneu e no desgaste acumulado:
 
-```
-Velocidade = VelocidadeBase - (Desgaste * 0.1)
-```
+$$
+\text{Velocidade} = \text{VelocidadeBase} - (\text{Desgaste} \times 0.1)
+$$
 
 Onde **VelocidadeBase** depende do tipo de pneu escolhido:
 
