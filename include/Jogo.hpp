@@ -15,7 +15,8 @@ class Jogo{
     private:
         Player *jogador;
         mutex pitstopMutex;
-        counting_semaphore<5> OrdemDeChegada{5};
+        mutex OrdemDeChegada;
+        atomic <int> PosicaoDoCarro;
 
 
     public:

@@ -13,10 +13,11 @@ private:
     string nome;
     Carro *carro;
     mutex &pitstopMutex;
-    counting_semaphore<5> &OrdemDeChegada;
+    mutex &OrdemDeChegada;
+    atomic <int> &PosicaoDoCarro;
 
 public:
-    Player(string nome, char tipoPneuInicial, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo);
+    Player(string nome, char tipoPneuInicial, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro);
     ~Player();
 
     string getNome();    

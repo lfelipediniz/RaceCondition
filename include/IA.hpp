@@ -13,10 +13,11 @@ public:
     string nome;
     Carro *carro;
     mutex &pitstopMutex;
-    counting_semaphore<5> &OrdemDeChegada;
+    mutex &OrdemDeChegada;
     int ResetarPneu;
+    atomic <int> &PosicaoDoCarro;
 
-    IA(string nome, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo);
+    IA(string nome, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro);
     ~IA(); 
 
     string getNome();    

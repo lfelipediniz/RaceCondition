@@ -11,7 +11,7 @@
 #define S 2.0
 #define M 1.7
 #define H 1.5
-#define DISTANCIA_TOTAL 50 // distância total da corrida (em metros ou voltas)
+#define DISTANCIA_TOTAL 100 // distância total da corrida (em metros ou voltas)
 
 using namespace std;
 
@@ -35,10 +35,11 @@ public:
     string nome;
     atomic<bool> DentroPitStop;
     atomic <bool> ChegouNaLargada;
-    counting_semaphore<5> &OrdemDeChegada;
-    
+    atomic <bool> EstourouPneu;
+    mutex &OrdemDeChegada;
+    atomic <int> &PosicaoDoCarro;
 
-    Carro(char tipoPneu, mutex &pitstopMutex, string Nome, counting_semaphore<5> &OrdemDeChegada);
+    Carro(char tipoPneu, mutex &pitstopMutex, string Nome, mutex &OrdemDeChegada, atomic <int> &PosicaoDoCarro);
     ~Carro(); // libera memória do pneu
 
     void fazerPitStop(char novoPneu);

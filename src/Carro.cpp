@@ -44,15 +44,17 @@ string Carro::getNomeCarro(){
 }
 
 //gente, é assim que faz inicialização em C++, se n fizer assim pode dar ruim (principalmente com o semáforo)
-Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome, counting_semaphore<5> &OrdemDeChegadaSemaforo) 
+Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro) 
     : pneu(new Pneu(tipoPneu)),
       distanciaPercorrida(0.0),
       pitstopMutex(Semaforo),
       nome(Nome),
-      OrdemDeChegada(OrdemDeChegadaSemaforo)
+      OrdemDeChegada(OrdemDeChegadaSemaforo),
+      PosicaoDoCarro(PosicaoDoCarro)
     {
         this->DentroPitStop.store(false);
         this->ChegouNaLargada.store(false);
+        this->EstourouPneu.store(false);
     }
 
 Carro::~Carro(){
@@ -80,21 +82,27 @@ void Carro::fazerPitStop(char novoPneu){
 
 void Carro::correr(){
     while (distanciaPercorrida < DISTANCIA_TOTAL){
-        if (this->pneu->desgaste >= 10) break;
+        if (this->pneu->desgaste >= 10) {
+            this->EstourouPneu.store(true); //colocar que este carro estourou o pneu
+            break;
+        }
 
         if (this->ChegouNaLargada.load() == false){
             if (this->DentroPitStop.load() == false){
 
             //atualizar o valor da distância percorrida
-            float ValorAtual = distanciaPercorrida.load();
-            while (!distanciaPercorrida.compare_exchange_weak(ValorAtual, ValorAtual + pneu->calcularVelocidade()));
-            
-            if (distanciaPercorrida > DISTANCIA_TOTAL) {
-                float ValorAtual = distanciaPercorrida.load();
-                while (!distanciaPercorrida.compare_exchange_weak(ValorAtual, ValorAtual + pneu->calcularVelocidade()));
+            distanciaPercorrida.fetch_add(pneu->calcularVelocidade());
 
+            if (distanciaPercorrida >= DISTANCIA_TOTAL) {
+                OrdemDeChegada.lock(); //passar pela linha de chegada
+                
+                distanciaPercorrida.fetch_add(100/PosicaoDoCarro.load()); //adicionar na distância baseado na posição que ele chegou
+
+                PosicaoDoCarro.fetch_add(1);
 
                 this->ChegouNaLargada.store(true);
+
+                OrdemDeChegada.unlock(); //após passar pela linha de chegada liberar ela para o outros carros
                 break;
             }
 

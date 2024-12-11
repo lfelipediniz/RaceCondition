@@ -2,12 +2,13 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <future>
 
 using namespace std;
 
-Player::Player(string nome, char tipoPneuInicial, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo) {
+Player::Player(string nome, char tipoPneuInicial, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo), PosicaoDoCarro(PosicaoDoCarro) {
     this->nome = nome;
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada);
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada, PosicaoDoCarro);
 }
 
 Player::~Player(){
@@ -29,10 +30,10 @@ Carro *Player::getCarro(){
 
 void Player::controlar(){
     while(true) {
-        if (this->carro->ChegouNaLargada.load()) break;
+        if (this->carro->ChegouNaLargada.load() || this->carro->EstourouPneu.load()) break;
         
         char escolha;
-        cin >> escolha;
+        escolha = cin.get();
 
         if(tolower(escolha) == 's' || tolower(escolha) == 'm' || tolower(escolha) == 'h'){
             carro->fazerPitStop(escolha); //fazer o pitstop

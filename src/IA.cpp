@@ -30,10 +30,10 @@ char PneuAleatorio(){
     return NovoPneu;
 }
 
-IA::IA(string nome, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo)  {
+IA::IA(string nome, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo), PosicaoDoCarro(PosicaoDoCarro)  {
     this->nome = nome;
     char tipoPneuInicial = PneuAleatorio();
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada);
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada, PosicaoDoCarro);
 
     this->ResetarPneu = GerarValorAleatorio(2, 9); //gerar aleatoriamente quando que o pneu deve ser resetado
 }
@@ -60,6 +60,8 @@ void IA::controlar() {
 
         if (carro->pneu->desgaste >= this->ResetarPneu){
             carro->fazerPitStop(PneuAleatorio()); //fazer o pitstop
+
+            this->ResetarPneu = GerarValorAleatorio(2, 9);
         }
 
         this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para a próxima iteração
