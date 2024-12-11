@@ -153,7 +153,7 @@ O pit stop só pode ser ocupado por apenas um carro.
   - Realizar um pit stop pausa o carro por 3 segundos, durante os quais o pneu é trocado e o desgaste é resetado.
 
 - **Inteligências Artificiais (IA):**
-  - As IAs utilizam de um algoritmo estocástico, permitindo que cada corrida seja única.
+  - As IAs utilizam de um algoritmo aleatório, permitindo que cada corrida seja única.
 
 
 ## Implementação de Threads e Semáforos
