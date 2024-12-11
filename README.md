@@ -102,9 +102,9 @@ Cada tipo de pneu possui uma taxa de desgaste específica que incrementa a cada 
 
 | **Nível** | **Código** | **Incremento de Desgaste por Segundo** |
 |-----------|------------|----------------------------------------|
-| 🟢 **Soft**  | `s`        | $\mathbf{0.5}$                         |
-| 🟡 **Medium**| `m`        | $\mathbf{0.3}$                         |
-| 🔴 **Hard**  | `h`        | $\mathbf{0.1}$                         |
+| 🟢 **Soft**  | `s`        | $\mathbf{0.5}$                      |
+| 🟡 **Medium**| `m`        | $\mathbf{0.3}$                      |
+| 🔴 **Hard**  | `h`        | $\mathbf{0.1}$                      |
 
 
 Se o desgaste de um pneu atingir **10**, o pneu estoura e o carro é eliminado da corrida.
