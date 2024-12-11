@@ -81,12 +81,18 @@ make run
   - A corrida termina quando todos os corredores passem pela linha de chegada ou sejam desclassificados.
   - Se um pneu estourar (desgaste atingir 10), o carro é desclassificado da corrida.
 
+<p align="center">
+  <img src="/imgs/meio_da_corrida.jpeg" alt="Meio da corrida">
+</p>
+
+
 ### Final da Corrida
 Quando oa corrida acaba, uma mensagem é exibida com os resultados finais e você será convidado a finalizar o jogo.
 
 <p align="center">
-  <img src="/imgs/meio_da_corrida.jpeg" alt="Capa do jogo">
+  <img src="/imgs/fim_da_corrida.jpeg" alt="Fim da corrida">
 </p>
+
 
 ## Cálculos e Lógica do Jogo
 
