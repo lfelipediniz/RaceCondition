@@ -90,7 +90,7 @@ make run
 Quando oa corrida acaba, uma mensagem é exibida com os resultados finais e você será convidado a finalizar o jogo.
 
 <p align="center">
-  <img src="/imgs/fim_da_corrida.jpeg" alt="Fim da corrida">
+  <img src="/imgs/fim_da_corrida.jpg" alt="Fim da corrida">
 </p>
 
 
