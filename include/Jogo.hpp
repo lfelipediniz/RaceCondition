@@ -20,7 +20,7 @@ class Jogo{
         vector<IA*> IAs;
         vector<Carro*> Carros;
 
-        Jogo(string nomeJogador);
+        Jogo(string nomeJogador, char pneuInicial);
         ~Jogo();
 
         void iniciar();

@@ -29,9 +29,9 @@ Carro *Player::getCarro(){
 
 void Player::controlar(){
     while(true) {
+        if (this->carro->ChegouNaLargada.load()) break;
+        
         char escolha;
-
-        cout << "Você pode entrar no pitstop a qulquer momento, digite 's', 'm' ou 'h' para escolher o tipo de pneu.\n";
         cin >> escolha;
 
         if(tolower(escolha) == 's' || tolower(escolha) == 'm' || tolower(escolha) == 'h'){

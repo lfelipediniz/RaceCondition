@@ -6,20 +6,36 @@
 
 using namespace std;
 
-IA::IA(string nome, char tipoPneuInicial, mutex &Semaforo): pitstopMutex(Semaforo) {
-    this->nome = nome;
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome);
-
-    //this->ResetarPneu = GerarValorAleatorio(2, 9); //gerar aleatoriamente quando que o pneu deve ser resetado
-    this->ResetarPneu = 2;
-}
-
-int IA::GerarValorAleatorio(int inicio, int fim){
+int GerarValorAleatorio(int inicio, int fim){
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> distrib(inicio, fim);
 
     return distrib(gen);
+}
+
+char PneuAleatorio(){
+    int numero_aleatorio = GerarValorAleatorio(1, 3);
+
+    char NovoPneu;
+
+    if (numero_aleatorio == 1){
+        NovoPneu = 's';
+    }
+    else if (numero_aleatorio == 2){
+        NovoPneu = 'm';
+    }
+    else{NovoPneu = 'h';}
+
+    return NovoPneu;
+}
+
+IA::IA(string nome, mutex &Semaforo): pitstopMutex(Semaforo) {
+    this->nome = nome;
+    char tipoPneuInicial = PneuAleatorio();
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome);
+
+    this->ResetarPneu = GerarValorAleatorio(2, 9); //gerar aleatoriamente quando que o pneu deve ser resetado
 }
 
 IA::~IA(){
@@ -40,20 +56,10 @@ Carro *IA::getCarro(){
 
 void IA::controlar() {
     while(true) {
+        if (this->carro->ChegouNaLargada.load()) break;
+
         if (carro->pneu->desgaste >= this->ResetarPneu){
-            int numero_aleatorio = GerarValorAleatorio(1, 3);
-
-            char NovoPneu;
-
-            if (numero_aleatorio == 1){
-                NovoPneu = 's';
-            }
-            else if (numero_aleatorio == 2){
-                NovoPneu = 'm';
-            }
-            else{NovoPneu = 'h';}
-
-            carro->fazerPitStop(NovoPneu); //fazer o pitstop
+            carro->fazerPitStop(PneuAleatorio()); //fazer o pitstop
         }
 
         this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para a próxima iteração

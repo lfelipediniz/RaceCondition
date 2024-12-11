@@ -18,7 +18,6 @@ Pneu::Pneu(char tipo) {
         velocidadeBase = H;
     }
     else{
-        cout << "Tipo de pneu inválido. Usando pneu médio (M) por padrão.\n";
         velocidadeBase = M; // setando o pneu médio como padrão
         this->tipo = 'm';
     }
@@ -40,7 +39,7 @@ void Pneu::desgastar() {
     }
 }
 
-string Carro::GetNome(){
+string Carro::GetNomeCarro(){
     return this->nome;
 }
 
@@ -50,7 +49,10 @@ Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome)
       distanciaPercorrida(0.0),
       pitstopMutex(Semaforo),
       nome(Nome)
-    {this->DentroPitStop.store(false);}
+    {
+        this->DentroPitStop.store(false);
+        this->ChegouNaLargada.store(false);
+    }
 
 Carro::~Carro(){
     if (pneu != nullptr){
@@ -67,8 +69,6 @@ void Carro::fazerPitStop(char novoPneu){
     delete pneu;
     pneu = new Pneu(novoPneu);
 
-    cout << "Pit stop concluido. Pneu trocado para: " << novoPneu << endl;
-
     // simulando o tempo de pit stop
     this_thread::sleep_for(chrono::seconds(3));
 
@@ -79,11 +79,26 @@ void Carro::fazerPitStop(char novoPneu){
 
 void Carro::correr(){
     while (distanciaPercorrida < DISTANCIA_TOTAL){
-        distanciaPercorrida += pneu->calcularVelocidade();
+        if (this->pneu->desgaste >= 10) break;
 
-        pneu->desgastar();
-        
-        // setando o tempo de corrida para 1 segundo
-        this_thread::sleep_for(chrono::seconds(1)); 
+        if (this->ChegouNaLargada.load() == false){
+            if (this->DentroPitStop.load() == false){
+
+            //atualizar o valor da distância percorrida
+            float ValorAtual = distanciaPercorrida.load();
+            while (!distanciaPercorrida.compare_exchange_weak(ValorAtual, ValorAtual + pneu->calcularVelocidade()));
+            
+            if (distanciaPercorrida > DISTANCIA_TOTAL) {
+                this->ChegouNaLargada.store(true);
+                break;
+            }
+
+            pneu->desgastar();
+            
+            
+            // setando o tempo de corrida para 1 segundo
+            this_thread::sleep_for(chrono::seconds(1)); 
+        }
+        }
     }
 }

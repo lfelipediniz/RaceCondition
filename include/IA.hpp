@@ -14,13 +14,12 @@ public:
     Carro *carro;
     mutex &pitstopMutex;
     int ResetarPneu;
-    IA(string nome, char tipoPneuInicial, mutex &Semaforo);
-    ~IA();
+    IA(string nome, mutex &Semaforo);
+    ~IA(); 
 
     string getNome();    
     Carro *getCarro();   
     void controlar();
-    int GerarValorAleatorio(int inicio, int fim);
 };
 
 #endif

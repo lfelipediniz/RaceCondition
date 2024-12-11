@@ -6,10 +6,11 @@
 #include <mutex>
 #include <atomic>
 
+// velocidades base dos pneus
 #define S 2.0
-#define M 1.5
-#define H 1.0
-#define DISTANCIA_TOTAL 1000 // distância total da corrida (em metros ou voltas)
+#define M 1.7
+#define H 1.5
+#define DISTANCIA_TOTAL 50 // distância total da corrida (em metros ou voltas)
 
 using namespace std;
 
@@ -28,10 +29,11 @@ public:
 class Carro{
 public:
     Pneu *pneu;
-    float distanciaPercorrida;
+    atomic <float> distanciaPercorrida;
     mutex &pitstopMutex;
     string nome;
     atomic<bool> DentroPitStop;
+    atomic <bool> ChegouNaLargada;
     
 
     Carro(char tipoPneu, mutex &pitstopMutex, string Nome);
@@ -39,7 +41,7 @@ public:
 
     void fazerPitStop(char novoPneu);
     void correr();                    // simulação do carro correndo
-    string GetNome();
+    string GetNomeCarro();
 };
 
 #endif

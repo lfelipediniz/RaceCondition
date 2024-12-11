@@ -9,13 +9,15 @@ int main() {
     cout << "=====================================\n";
 
     string nomeJogador;
+    char tipoPneuInicial;
     cout << "Qual o nome do seu corredor: ";
     getline(cin, nomeJogador);
-    Jogo jogo(nomeJogador);
+    cout << "Com qual tipo de pneu você deseja iniciar a corrida (s/m/h): ";
+    cin >> tipoPneuInicial;
 
+    Jogo jogo(nomeJogador, tipoPneuInicial);
 
     jogo.iniciar();
-
 
     cout << "Obrigado por jogar!\n";
 
