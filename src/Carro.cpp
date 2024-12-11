@@ -1,13 +1,24 @@
+/*
+Nomes dos integrantes e nUSP:
+
+Enzo Tonon Morente - 14568476
+João Pedro Alves Notari Godoy - 14582076
+Letícia Barbosa Neves - 14588659
+Luiz Felipe Diniz Costa - 13782032
+*/
+
 #include "../include/Carro.hpp"
 #include <thread>
 #include <chrono>
 
 using namespace std;
 
+//
 Pneu::Pneu(char tipo) {
     this->tipo = tipo;
     this->desgaste = 0;
 
+    //seleciona a velocidade do pneu de acordo com o tipo escolhido
     if (tipo == 's'){
         velocidadeBase = S;
     }
@@ -17,28 +28,31 @@ Pneu::Pneu(char tipo) {
     else if (tipo == 'h'){
         velocidadeBase = H;
     }
-    else{
-        velocidadeBase = M; // setando o pneu médio como padrão
+    else{ //se o jogador nao selecionar nenhum dos tipos existentes, o medio sera selecionado como padrao
+        velocidadeBase = M; 
         this->tipo = 'm';
     }
 }
 
+//funcao para calcular velocidade do pneu com base no desgaste dele
 float Pneu::calcularVelocidade(){
     return velocidadeBase - desgaste * 0.1;
 }
 
+//funcao que aumenta o desgaste do pneu de acordo com o tipo
 void Pneu::desgastar() {
     if (tipo == 's') {
-        desgaste += 0.3f;
+        desgaste += 0.5f;
     }
     else if (tipo == 'm'){
-        desgaste += 0.2f;
+        desgaste += 0.3f;
     }
     else if (tipo == 'h'){
         desgaste += 0.1f;
     }
 }
 
+//retorna o nome do carro
 string Carro::getNomeCarro(){
     return this->nome;
 }

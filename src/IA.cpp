@@ -1,3 +1,12 @@
+/*
+Nomes dos integrantes e nUSP:
+
+Enzo Tonon Morente - 14568476
+João Pedro Alves Notari Godoy - 14582076
+Letícia Barbosa Neves - 14588659
+Luiz Felipe Diniz Costa - 13782032
+*/
+
 #include "../include/IA.hpp"
 #include <iostream>
 #include <thread>
@@ -14,6 +23,7 @@ int GerarValorAleatorio(int inicio, int fim){
     return distrib(gen);
 }
 
+//
 char PneuAleatorio(){
     int numero_aleatorio = GerarValorAleatorio(1, 3);
 
