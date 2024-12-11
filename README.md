@@ -16,7 +16,7 @@
 
 ## Introdução
 
-**RaceCondition** é uma simulação de corrida de Fórmula 1. O jogo permite que o jogador concorra contra quatro corredores controlados por Inteligência Artificial (IA). O principal foco do projeto é a aplicação prática de conceitos de **threads** e **semaforos** para gerenciar a concorrência e sincronização entre diferentes componentes do sistema.
+**RaceCondition** é uma simulação de corrida de Fórmula 1. O jogo permite que o jogador concorra contra quatro corredores controlados por Inteligência Artificial (IA). O principal foco do projeto é a aplicação prática de conceitos de **threads** e **semáforos** para gerenciar a concorrência e sincronização entre diferentes componentes do sistema.
 
 O objetivo é proporcionar uma experiência interativa onde o jogador deve gerenciar estratégias de pit stop, escolhendo tipos de pneus adequados para vencer a corrida, enquanto lida com as decisões automáticas das IAs. A simulação destaca como múltiplas threads podem operar simultaneamente e como semáforos são utilizados para controlar o acesso a recursos compartilhados, como pit stop e linha de chegada. 
 
@@ -73,10 +73,10 @@ make run
     - **s**: Trocar para pneus **SOFT**.
     - **m**: Trocar para pneus **MEDIUM**.
     - **h**: Trocar para pneus **HARD**.
-  - O pit stop ficará ocupado por 3 segundos, durante os quais nenhum outro carro poderá usa-lo.
+  - O pit stop ficará ocupado por 3 segundos, durante os quais nenhum outro carro poderá usá-lo.
 
 - **Condições de Vitória:**
-  - A corrida termina quando todos os corredores passem pela linha de chegada ou sejam desclassificados.
+  - A corrida termina quando todos os corredores passarem pela linha de chegada ou quando todos tenham sido desclassificados.
   - Se um pneu estourar (desgaste atingir 10), o carro é desclassificado da corrida. Quando isso acontece, um X irá aparecer na situação do piloto para indicar que ele está fora.
 
 <p align="center">
@@ -153,14 +153,14 @@ O pit stop só pode ser ocupado por apenas um carro.
   - Realizar um pit stop pausa o carro por 3 segundos, durante os quais o pneu é trocado e o desgaste é resetado.
 
 - **Inteligências Artificiais (IA):**
-  - As IAs utilizam de um algoritimo estocástico, permitindo que cada corrida seja única.
+  - As IAs utilizam de um algoritmo estocástico, permitindo que cada corrida seja única.
 
 
 ## Implementação de Threads e Semáforos
 
 ### Visão Geral
 
-O projeto usa **threads** e **semaforos** para gerenciar a concorrência entre múltiplos corredores (jogador e IAs) e para sincronizar o acesso a recursos compartilhados, como o pit stop e linha de chegada.
+O projeto usa **threads** e **semáforos** para gerenciar a concorrência entre múltiplos corredores (jogador e IAs) e para sincronizar o acesso a recursos compartilhados, como o pit stop e linha de chegada.
 
 ### Threads
 
@@ -170,17 +170,17 @@ As **threads** permitem a execução simultânea de diferentes partes do program
    - Todos os carros possuem uma thread para correr na pista.
 
 2. **Threads das IAs**
-   - Cada carro das IAs vai ter uma thread com um contralador que vai decidir quando ele deve entrar no pit e qual pneu ele vai colocar.
+   - Cada carro das IAs vai ter uma thread com um controlador que vai decidir quando ele deve entrar no pit e qual pneu ele vai colocar.
 
 3. **Thread do Jogador**
-   - É uma thread que irá monitorar a entrada do usuário para verificar quando o jogador quer entrar no pit, qual tipo de pneu quer colocar e dessa forma controlar o carro em relação a entrada no pit.
+   - É uma thread que irá monitorar a entrada do usuário para verificar quando o jogador quer entrar no pit stop, qual tipo de pneu quer colocar e dessa forma controlar o carro em relação a entrada no pit stop.
 
 4. **Thread de Desenho da Pista**
    - Atualiza a visualização da pista e da tabela de classificação em tempo real.
 
 ### Semáforos
 
-Os **semaforos** são usados para controlar o acesso a recursos compartilhados, permitindo que apenas uma thread possa acessar o recurso por vez, evitando condições de corrida.
+Os **semáforos** são usados para controlar o acesso a recursos compartilhados, permitindo que apenas uma thread possa acessar o recurso por vez, evitando condições de corrida.
 
 - **Semáforo do Pit Stop**
   - Usa o `std::mutex`.
@@ -203,7 +203,7 @@ Os **semaforos** são usados para controlar o acesso a recursos compartilhados, 
 - **Semáforos**
   - Garantem a sincronização adequada no acesso ao pit stop e da linha de chegada.
   - Evitam condições de corrida onde múltiplos carros tentam acessar o pit stop ou a linha de chegada ao mesmo tempo, o que poderia causar RaceCondition.
-  - A escolha do semáforo mutex foi feita para ambos os casos, pois só existia a necessiade do semáforo assumir valores 0 e 1.
+  - A escolha do semáforo mutex foi feita para ambos os casos, pois só existia a necessidade do semáforo assumir valores 0 e 1.
 
 ### Fluxo de Funcionamento
 
@@ -260,7 +260,7 @@ Controla a lógica das IAs que competem na corrida.
   - `mutex &pitstopMutex`: Referência ao mutex do pit stop.
   - `mutex &OrdemDeChegada`: Referência ao mutex da ordem de chegada.
   - `int ResetarPneu`: Valor aleatório para determinar quando realizar o pit stop.
-  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa a linha de chegada.
+  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa pela linha de chegada.
 
 - **Métodos**
   - `void controlar()`: Gerencia a movimentação e estratégias de pit stop da IA.
@@ -274,7 +274,7 @@ Controla a lógica do jogador na corrida.
   - `Carro *carro`: Ponteiro para o carro controlado pelo jogador.
   - `mutex &pitstopMutex`: Referência ao mutex do pit stop.
   - `mutex &OrdemDeChegada`: Referência ao mutex da ordem de chegada.
-  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa a linha de chegada.
+  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa pela linha de chegada.
 
 - **Métodos**
   - `void controlar()`: Monitora as entradas do jogador para realizar pit stops.
@@ -299,7 +299,7 @@ Gerencia o estado geral da corrida, incluindo a criação de corredores, inicial
 
 ## Considerações Finais
 
-O **RaceCondition** é um jogo que usa muito bem dos conceitos de **threads** e **semaforos** em C++. Através da simulação de uma corrida de Fórmula 1, o projeto demonstra como gerenciar a concorrência e a sincronização entre múltiplas threads, evitando sempre a RaceCondition.
+O **RaceCondition** é um jogo que utiliza muito bem os conceitos de **threads** e **semáforos** em C++. Através da simulação de uma corrida de Fórmula 1, o projeto demonstra como gerenciar a concorrência e a sincronização entre múltiplas threads, evitando sempre a RaceCondition.
 
 ### Colaboradores
 
