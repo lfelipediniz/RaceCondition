@@ -18,9 +18,21 @@ int main() {
     cout << "=====================================\n";
 
     string nomeJogador;
+
+    while (true){ //pegar um nome menor que 17 caracteres
+        cout << "Qual o nome do seu corredor: ";
+
+        getline(cin, nomeJogador);
+
+        if (nomeJogador.size() > 16){
+            cout << "Digite um nome menor!\n";
+        }
+        else{
+            break;
+        }
+    }
+
     char tipoPneuInicial;
-    cout << "Qual o nome do seu corredor: ";
-    getline(cin, nomeJogador);
     cout << "Com qual tipo de pneu você deseja iniciar a corrida (s/m/h): ";
     cin >> tipoPneuInicial;
 

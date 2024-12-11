@@ -15,9 +15,10 @@ Luiz Felipe Diniz Costa - 13782032
 
 using namespace std;
 
+//seta os valores dos semáforos e do atomic passado para essa classe
 Player::Player(string nome, char tipoPneuInicial, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo), PosicaoDoCarro(PosicaoDoCarro) {
-    this->nome = nome;
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada, PosicaoDoCarro);
+    this->nome = nome; //seta o nome
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada, PosicaoDoCarro); //cria o carro
 }
 
 Player::~Player(){
@@ -27,7 +28,7 @@ Player::~Player(){
     }
 }
 
-string Player::getNome(){
+string Player::getNome(){ //pega o nome
     return nome;
 }
 
@@ -39,11 +40,13 @@ Carro *Player::getCarro(){
 
 void Player::controlar(){
     while(true) {
+        //caso o carro tenha terminado a corrida ou furado o pneu parar a thread de controlar o carro
         if (this->carro->ChegouNaLargada.load() || this->carro->EstourouPneu.load()) break;
         
-        char escolha;
+        //pegar o pneu para fazer o pitstop passado pelo usuário
+        char escolha; 
         escolha = cin.get();
-
+        
         if(tolower(escolha) == 's' || tolower(escolha) == 'm' || tolower(escolha) == 'h'){
             carro->fazerPitStop(escolha); //fazer o pitstop
         }

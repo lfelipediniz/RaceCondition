@@ -106,6 +106,8 @@ void Carro::correr(){
             //atualizar o valor da distância percorrida
             distanciaPercorrida.fetch_add(pneu->calcularVelocidade());
 
+            this->pneu->desgastar(); //desgastar o pneu
+
             if (distanciaPercorrida >= DISTANCIA_TOTAL) { //verificar se assou na linha de chegada
                 OrdemDeChegada.lock(); //tenta acessar a região crítica da chegada
                 
