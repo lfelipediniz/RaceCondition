@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <mutex>
+#include <atomic>
 
 #define S 2.0
 #define M 1.5
@@ -29,18 +30,16 @@ public:
     Pneu *pneu;
     float distanciaPercorrida;
     mutex &pitstopMutex;
+    string nome;
+    atomic<bool> DentroPitStop;
+    
 
-    Carro(char tipoPneu, mutex &pitstopMutex);
+    Carro(char tipoPneu, mutex &pitstopMutex, string Nome);
     ~Carro(); // libera memória do pneu
 
     void fazerPitStop(char novoPneu);
     void correr();                    // simulação do carro correndo
-    void verificarProgressoCorrida(); // mostra o progresso e verfica o fim
+    string GetNome();
 };
-
-// class FazerES{
-// public:
-//     void escolhaPitstop();
-// };
 
 #endif

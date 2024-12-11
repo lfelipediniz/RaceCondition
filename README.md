@@ -50,6 +50,7 @@ Este projeto consiste na implementação de um jogo de corrida de Fórmula 1 que
   - **Vertapen:** Tendência a usar pneus SOFT (estilo liberal).
   - **Hamiton:** Tendência a usar pneus MEDIUM (estilo balanceado).
   - **Charles:** Tendência a usar pneus HARD (estilo conservador).
+  - **Bortoleto** Comportamento aleatório
 
 - **Estratégias de Pit Stop:**
   - Cada IA possui estratégias pré-definidas que determinam quando realizar pit stops, baseadas em fatores como desgaste dos pneus e proximidade da linha de chegada.

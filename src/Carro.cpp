@@ -40,12 +40,17 @@ void Pneu::desgastar() {
     }
 }
 
+string Carro::GetNome(){
+    return this->nome;
+}
+
 //gente, é assim que faz inicialização em C++, se n fizer assim pode dar ruim (principalmente com o semáforo)
-Carro::Carro(char tipoPneu, mutex &Semaforo) 
+Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome) 
     : pneu(new Pneu(tipoPneu)),
       distanciaPercorrida(0.0),
-      pitstopMutex(Semaforo)
-    {}
+      pitstopMutex(Semaforo),
+      nome(Nome)
+    {this->DentroPitStop.store(false);}
 
 Carro::~Carro(){
     if (pneu != nullptr){
@@ -57,6 +62,8 @@ Carro::~Carro(){
 void Carro::fazerPitStop(char novoPneu){
     pitstopMutex.lock(); // trava o mutex para garantir que apenas um carro faça o pitstop por vez
 
+    this->DentroPitStop.store(true);
+
     delete pneu;
     pneu = new Pneu(novoPneu);
 
@@ -65,19 +72,9 @@ void Carro::fazerPitStop(char novoPneu){
     // simulando o tempo de pit stop
     this_thread::sleep_for(chrono::seconds(3));
 
+    this->DentroPitStop.store(false);
+
     pitstopMutex.unlock(); // destrava o mutex
-}
-
-void Carro::verificarProgressoCorrida(){
-    cout << "Distância percorrida por " << distanciaPercorrida << " metros\n";
-    cout << "Pneu atual: " << pneu->tipo << " com desgaste de " << pneu->desgaste << endl;
-
-    if(distanciaPercorrida >= DISTANCIA_TOTAL){
-        cout << "Ai toma!!! Carro chegou na linha de chegada!\n";
-    } else if (pneu->desgaste >= 10){
-        cout << "Pneu furou! Você está fora da corrida\n";
-        distanciaPercorrida = DISTANCIA_TOTAL;
-    }
 }
 
 void Carro::correr(){
@@ -85,7 +82,6 @@ void Carro::correr(){
         distanciaPercorrida += pneu->calcularVelocidade();
 
         pneu->desgastar();
-        verificarProgressoCorrida();
         
         // setando o tempo de corrida para 1 segundo
         this_thread::sleep_for(chrono::seconds(1)); 

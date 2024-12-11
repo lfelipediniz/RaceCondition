@@ -2,6 +2,9 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <cmath>
+#include <algorithm>
+#include <iomanip>
 
 using namespace std;
 
@@ -20,54 +23,93 @@ Jogo::~Jogo() {
 }
 
 void Jogo::iniciar() {
-    thread threadCorrida(&Carro::correr, jogador->getCarro()); // inicia a thread do carro
-    thread threadControle(&Player::controlar, jogador);        // inicia a thread de controle do jogador
+    IAs.emplace_back(new IA("Max Verstapo", 's', pitstopMutex));
+    IAs.emplace_back(new IA("Leo Leclerc", 'm', pitstopMutex));
+    IAs.emplace_back(new IA("Luiz Hamilltown", 'h', pitstopMutex));
 
-    while (jogador->getCarro()->distanciaPercorrida < DISTANCIA_TOTAL)
-    {
-        this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para encerrar as threads
+    for (auto& ia:IAs){
+        threads.emplace_back(&Carro::correr, ia->getCarro());
+        threads.emplace_back(&IA::controlar, ia);
+        Carros.emplace_back(ia->getCarro());
     }
 
-    // aguarda a conclusão das thread corrida
-    threadCorrida.join();
-    // desanexa a thread controle do programa principal, assim ela consegue executar de maneira independente
-    threadControle.detach();
+    threads.emplace_back(&Carro::correr, jogador->getCarro());
+    Carros.emplace_back(jogador->getCarro());
+
+    threads.emplace_back(&Player::controlar, jogador);
+
+    threads.emplace_back(&Jogo::desenharPista, this, Carros);
+    
+
+    //se ta dando errado pode ser esse while aqui que eu não sei para q serve
+    /*while (jogador->getCarro()->distanciaPercorrida < DISTANCIA_TOTAL)
+    {
+        this_thread::sleep_for(chrono::seconds(1)); // espera 1 segundo para encerrar as threads
+    }*/ 
+
+    for (auto& t:threads){
+        t.join();
+    }
 
     cout << "Fim da corrida! Parabéns, " << jogador->getNome() << "!\n";
 }
-    /*
-    void desenharPista(vetor com os carros (ou passa todos os carros), comprimento da pista) {
-        cout << "Pista:\n";
 
-        //caso seja um vetor de carros, sera um for:
-        for(int i = 0; i < 4; ++i) { // Para cada carro
-            cout << carros[i].nome << ": ";
-            int pos = carros[i].posicao;
-            if(pos > comprimento_pista) pos = comprimento_pista;
-            for(int j = 0; j < pos; ++j) {
-                cout << "-";
-            }
-        cout << "🏎️\n"; // Emoji do carro, da pra mudar pra outra representação do carro
-        }
+// printando a tabela de classificação dos carrinhos
+void exibirTabela(const vector<Carro*> carros) {
+    cout << "\nClassificação:\n";
+    cout << "+---------+----------------------+---------------+-----------+-----------+\n";
+    cout << "| Posição |        Carro         | Desgaste Pneu | Tipo Pneu |  Pitstop  |\n";
+    cout << "+---------+----------------------+---------------+-----------+-----------+\n";
 
-        //caso contrario, tera q fazer um print pra cada carro separadamente, me avisem que eu faço
-    }
-
-    void mostrarTabela() {
-        cout << "\nClassificação:\n";
-        cout << "+---------+----------+---------------+-----------+---------+\n";
-        cout << "| Posição |   Carro  | Desgaste Pneu | Tipo Pneu | Pitstop |\n";
-        cout << "+---------+----------+---------------+-----------+---------+\n";
-
-        for (int i = 0; i < classificacao.size(); ++i) {
-            cout << "| " << setw(7) << (i + 1) << " | "
-                    << setw(8) << classificacao[i].nome << " | "
-                    << setw(13) << classificacao[i].desgaste_pneu << " | "
-                    << setw(9) << "Macio" << " | "
-                    << setw(7) << "Sim" << " |\n";
-        }
-
-        cout << "+---------+----------+---------------+-----------+---------+\n";
-    }
     
-    */
+
+    for (const auto &carro : carros) {
+        cout << "| " << setw(7) << (i + 1) << " | "
+            << setw(20) << carro->GetNome() << " | "
+            << setw(13) << carro->pneu->desgaste << " | "
+            << setw(9) << carro->pneu->tipo << " | "
+            << setw(9) << (carro->DentroPitStop.load() ? "Sim" : "Nao") << " |\n";
+    }
+
+    cout << "+---------+----------------------+---------------+-----------+-----------+\n";
+}
+
+// Função para limpar o terminal
+void limparTerminal() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+// printando a pista com os carrinhos em suas posições
+void Jogo::desenharPista(const vector<Carro*> carros) {
+    while (true){
+        limparTerminal();
+        
+        int tamanho_visivel = 50; // Comprimento visível da pista
+
+        cout << "\nPista:\n";
+        for (const auto &carro : carros) {
+            cout << setw(20) << carro->GetNome() << ": ";
+
+            // Calcula a posição na pista visível (1 traço para cada 2 unidades percorridas)
+            int sub = min(tamanho_visivel, static_cast<int>(floor(carro->distanciaPercorrida / 20.0)));
+            int pos = tamanho_visivel - sub;
+
+            // Desenha os traços restantes até a chegada
+            for (int j = 0; j < pos; ++j) {
+                cout << " ";
+            }
+            cout << "🏎️"; // Emoji do carro
+            cout << string(sub, ' ');
+            cout << "#\n";
+        }
+
+        exibirTabela(carros);
+        this_thread::sleep_for(chrono::seconds(1)); 
+    }
+
+}
+
