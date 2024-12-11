@@ -23,10 +23,13 @@ Jogo::~Jogo() {
 }
 
 void Jogo::iniciar() {
+
     IAs.emplace_back(new IA("Max Verstapo",  pitstopMutex));
     IAs.emplace_back(new IA("Leo Leclerc", pitstopMutex));
     IAs.emplace_back(new IA("Luiz Hamilltown", pitstopMutex));
     IAs.emplace_back(new IA("Borboleto", pitstopMutex));
+
+
 
     for (auto& ia:IAs){
         threads.emplace_back(&Carro::correr, ia->getCarro());
@@ -49,12 +52,13 @@ void Jogo::iniciar() {
     cout << "Fim da corrida! Parabéns, " << jogador->getNome() << "!\n";
 }
 
+
 // ordenando os carros pela distância percorrida
 vector<Carro*> ordenarClassificacao(vector<Carro*> carros) {
     vector<Carro*> classificacao = carros;
     sort(classificacao.begin(), classificacao.end(),  [](const Carro *a, const Carro *b) {
         return a->distanciaPercorrida >= b->distanciaPercorrida;
-    });
+   });
     return classificacao;
 }
 
@@ -75,6 +79,8 @@ void exibirTabela(const vector<Carro*> classificacao) {
                   << setw(9) << classificacao[i]->pneu->tipo << " | "
                   << setw(9) <<(classificacao[i]->DentroPitStop.load() ? "Sim" : "Nao") << " |\n";
     }
+
+
     cout << "+---------+----------------------+---------------+-----------+-----------+\n";
 }
 
