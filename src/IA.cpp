@@ -64,7 +64,7 @@ Carro *IA::getCarro(){
 void IA::controlar() {
     while(true) {
         //caso o carro tenha acabado a corrida, finalizar a trhead que o controla
-        if (this->carro->ChegouNaLargada.load()) break; 
+        if (this->carro->ChegouNaLargada.load() || this->carro->EstourouPneu.load()) break; 
 
         if (carro->pneu->desgaste >= this->ResetarPneu){ //verificar se deve fazer um pitstop
             carro->fazerPitStop(PneuAleatorio()); //fazer o pitstop
