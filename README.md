@@ -18,7 +18,7 @@
 
 **RaceCondition** é uma simulação de corrida de Fórmula 1. O jogo permite que o jogador concorra contra quatro corredores controlados por Inteligência Artificial (IA). O principal foco do projeto é a aplicação prática de conceitos de **threads** e **semaforos** para gerenciar a concorrência e sincronização entre diferentes componentes do sistema.
 
-O objetivo é proporcionar uma experiência interativa onde o jogador deve gerenciar estratégias de pit stop, escolhendo tipos de pneus adequados para vencer a corrida, enquanto lida com as decisões automáticas das IAs. A simulação destaca como múltiplas threads podem operar simultaneamente e como semáforos são utilizados para controlar o acesso a recursos compartilhados. 
+O objetivo é proporcionar uma experiência interativa onde o jogador deve gerenciar estratégias de pit stop, escolhendo tipos de pneus adequados para vencer a corrida, enquanto lida com as decisões automáticas das IAs. A simulação destaca como múltiplas threads podem operar simultaneamente e como semáforos são utilizados para controlar o acesso a recursos compartilhados, como pit stop e linha de chegada. 
 
 ## Requisitos
 
@@ -54,7 +54,7 @@ make run
 ### Início da Corrida
 
 1. **Nome do Corredor**
-    Ao iniciar o jogo, você será deverá inserir o nome do seu corredor.
+    Ao iniciar o jogo, você deverá inserir o nome do seu corredor.
 
 
 2. **Escolha do Tipo de Pneu Inicial:**
@@ -67,7 +67,7 @@ make run
 
 - **Monitoramento:**
   - A pista será exibida no terminal, mostrando a posição de cada corredor.
-  - Uma tabela de classificação será atualizada a cada segundo, exibindo informações como desgaste dos pneus, tipo de pneu, status de pit stop e situação atual (em corrida, no pit stop ou eliminado).
+  - Uma tabela de classificação será atualizada a cada segundo, exibindo informações como desgaste dos pneus, tipo de pneu, status de pit stop e situação atual (em corrida, no pit stop ou desclassificado).
 
 - **Realizar Pit Stop:**
   - Quando julgar necessário, você pode optar por entrar no pit stop para trocar os pneus.
@@ -78,8 +78,8 @@ make run
   - O pit stop ficará ocupado por 3 segundos, durante os quais nenhum outro carro poderá usa-lo.
 
 - **Condições de Vitória:**
-  - A corrida termina quando um dos corredores alcança a distância total de 100 kilometros.
-  - Se um pneu estourar (desgaste atingir 10), o carro é eliminado da corrida.
+  - A corrida termina quando todos os corredores passem pela linha de chegada ou sejam desclassificados.
+  - Se um pneu estourar (desgaste atingir 10), o carro é desclassificado da corrida.
 
 ### Final da Corrida
 Quando oa corrida acaba, uma mensagem é exibida com os resultados finais e você será convidado a finalizar o jogo.
@@ -119,24 +119,26 @@ Onde **VelocidadeBase** depende do tipo de pneu escolhido:
 
 1. **Carro com Pneu SOFT e Desgaste 3:**
 
-   $$
-   \text{Velocidade} = 2.1 - (3 \times 0.1) = 2.1 - 0.3 = 1.8 \text{ unidades}
-   $$
+$$
+\text{Velocidade} = 2.1 - (3 \times 0.1) = 2.1 - 0.3 = 1.8 \text{ unidades}
+$$
 
 2. **Carro com Pneu MEDIUM e Desgaste 5:**
 
-   $$
-   \text{Velocidade} = 1.9 - (5 \times 0.1) = 1.9 - 0.5 = 1.4 \text{ unidades}
-   $$
+$$
+\text{Velocidade} = 1.9 - (5 \times 0.1) = 1.9 - 0.5 = 1.4 \text{ unidades}
+$$
 
 3. **Carro com Pneu HARD e Desgaste 2:**
 
-   $$
-   \text{Velocidade} = 1.6 - (2 \times 0.1) = 1.6 - 0.2 = 1.4 \text{ unidades}
-   $$
+$$
+\text{Velocidade} = 1.6 - (2 \times 0.1) = 1.6 - 0.2 = 1.4 \text{ unidades}
+$$
 
 
 ### Estratégia de Pit Stop
+
+O pit stop só pode ser ocupado por apenas um carro.
 
 - **Jogador**
   - O jogador pode optar por entrar no pit stop a qualquer momento para trocar os pneus, escolhendo entre SOFT, MEDIUM ou HARD.
@@ -150,20 +152,20 @@ Onde **VelocidadeBase** depende do tipo de pneu escolhido:
 
 ### Visão Geral
 
-O projeto usa **threads** e **semaforos** para gerenciar a concorrência entre múltiplos corredores (jogador e IAs) e para sincronizar o acesso a recursos compartilhados, como o pit stop.
+O projeto usa **threads** e **semaforos** para gerenciar a concorrência entre múltiplos corredores (jogador e IAs) e para sincronizar o acesso a recursos compartilhados, como o pit stop e linha de chegada.
 
 ### Threads
 
 As **threads** permitem a execução simultânea de diferentes partes do programa, simulando a concorrência real de uma corrida. As principais threads implementadas são:
 
-1. **Thread Principal**
-   - Responsável por iniciar a corrida e gerenciar as threads dos corredores.
+1. **Thread Carro**
+   - Todos os carros possuem uma thread para correr na pista.
 
 2. **Threads das IAs**
-   - Cada corredor controlado por IA possui sua própria thread para gerenciar sua movimentação e estratégias de pit stop.
+   - Cada carro controlado por IA possui tem uma thread que o controla para gerenciar a estratégias de pit stop.
 
 3. **Thread do Jogador**
-   - Monitora as entradas do usuário para realizar pit stops sem bloquear a execução das threads dos corredores.
+   - Monitora as entradas do usuário para realizar pit stops no carro do usuário.
 
 4. **Thread de Desenho da Pista**
    - Atualiza a visualização da pista e da tabela de classificação em tempo real.
@@ -178,30 +180,40 @@ Os **semaforos** são usados para controlar o acesso a recursos compartilhados, 
   - Quando um carro entra no pit stop, o mutex é bloqueado, impedindo que outros carros acessem o pit stop simultaneamente.
   - Após a conclusão do pit stop, o mutex é liberado, assim permitido que outro carro utilize o pit stop.
 
+- **Semáforo do Linha de Chegada**
+  - Usa o `std::mutex`.
+  - Garante que apenas um carro (jogador ou IA) possa passar pela linha de chegada por vez.
+  - Quando um carro passa pela linha de chegada, o mutex é bloqueado, impedindo que outros carros passem por ela simultaneamente.
+  - Após o carro ultrapassar a linha, o mutex é liberado, assim possibilitando que outros carros passem por ela.
+
 ### Justificativa do Uso
 
 - **Threads**
-  - Permitem simular a corrida em tempo real, com múltiplos corredores avançando simultaneamente.
+  - Permitem simular a corrida em tempo real, com múltiplos pilotos avançando simultaneamente.
   - Melhoram a responsividade do jogo, permitindo que o jogador interaja enquanto a corrida acontece.
 
 - **Semáforos**
-  - Garantem a sincronização adequada no acesso ao pit stop.
-  - Evitam condições de corrida onde múltiplos carros tentam acessar o pit stop ao mesmo tempo, o que poderia causar RaceCondition.
+  - Garantem a sincronização adequada no acesso ao pit stop e da linha de chegada.
+  - Evitam condições de corrida onde múltiplos carros tentam acessar o pit stop ou a linha de chegada ao mesmo tempo, o que poderia causar RaceCondition.
 
 ### Fluxo de Funcionamento
 
 1. **Início da Corrida**
-   - A thread principal (`Jogo::iniciar`) cria e inicia as threads de todos os corredores (jogador e IAs).
+   - O método (`Jogo::iniciar`) cria e inicia as threads de todos os carros e controladores (jogador e IAs).
 
 2. **Movimentação dos Carros**
-   - Cada thread de corredor executa `correr()`, incrementando a distância percorrida e verificando o desgaste dos pneus.
+   - Cada thread do carro executa `correr()`, incrementando a distância percorrida e verificando o desgaste dos pneus.
 
 3. **Realização de Pit Stops**
-   - Quando um corredor decide realizar um pit stop (jogador ou IA), tenta pegar o `pitstopMutex`.
+   - Quando um controlador decide realizar um pit stop (jogador ou IA), ele tenta pegar o `pitstopMutex`.
    - Se o mutex for capturado com sucesso, o carro entra no pit stop, realiza a troca de pneus e libera o mutex após 3 segundos.
-   - Enquanto o pit stop está ocupado, outros corredores que tentarem realizar um pit stop serão bloqueados até que o mutex seja liberado.
+   - Enquanto o pit stop está ocupado, outros pilotos que tentarem realizar um pit stop serão bloqueados até que o mutex seja liberado.
 
-4. **Finalização da Corrida**
+4. **Passagem pela Linha de Chegada**
+   - Quando um carro chega na linha de chegada o mesmo tenta pegar o mutex 'OrdemDeChegada'.
+   - Se o mutex for capturado com sucesso, o carro entra passa pela linha de chegada, é marcado que finalizou a corrida e libera a região crítica.
+
+5. **Finalização da Corrida**
    - A corrida termina quando todos os carros atingem a linha de chegada ou estouram os pneus.
    - Todas as threads são unidas (`join`), e a classificação final é exibida.
 
@@ -211,7 +223,7 @@ As classes principais do **RaceCondition** são `Carro`, `IA`, `Player` e `Jogo`
 
 #### 1. **Carro**
 
-Representa cada corredor na corrida, seja o jogador ou uma IA.
+Representa cada carro na corrida, seja ele de um jogador ou de uma IA.
 
 - **Atributos**
   - `Pneu *pneu`: Tipo e estado dos pneus.
@@ -222,7 +234,7 @@ Representa cada corredor na corrida, seja o jogador ou uma IA.
   - `atomic<bool> ChegouNaLargada`: Indica se o carro alcançou a linha de chegada.
   - `atomic<bool> EstourouPneu`: Indica se o pneu estourou.
   - `mutex &OrdemDeChegada`: Mutex para gerenciar a ordem de chegada.
-  - `atomic<int> &PosicaoDoCarro`: Posição atual do carro na corrida.
+  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa a linha de chegada.
 
 - **Métodos**
   - `void fazerPitStop(char novoPneu)`: Realiza o pit stop para troca de pneus.
@@ -239,21 +251,21 @@ Controla a lógica das IAs que competem na corrida.
   - `mutex &pitstopMutex`: Referência ao mutex do pit stop.
   - `mutex &OrdemDeChegada`: Referência ao mutex da ordem de chegada.
   - `int ResetarPneu`: Valor aleatório para determinar quando realizar o pit stop.
-  - `atomic<int> &PosicaoDoCarro`: Posição atual do carro na corrida.
+  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa a linha de chegada.
 
 - **Métodos**
   - `void controlar()`: Gerencia a movimentação e estratégias de pit stop da IA.
 
 #### 3. **Player**
 
-Controla a lógica do jogador 1 na corrida.
+Controla a lógica do jogador na corrida.
 
 - **Atributos**
   - `string nome`: Nome do jogador.
   - `Carro *carro`: Ponteiro para o carro controlado pelo jogador.
   - `mutex &pitstopMutex`: Referência ao mutex do pit stop.
   - `mutex &OrdemDeChegada`: Referência ao mutex da ordem de chegada.
-  - `atomic<int> &PosicaoDoCarro`: Posição atual do carro na corrida.
+  - `atomic<int> &PosicaoDoCarro`: Posição do carro quando ele passa a linha de chegada.
 
 - **Métodos**
   - `void controlar()`: Monitora as entradas do jogador para realizar pit stops.
@@ -278,7 +290,7 @@ Gerencia o estado geral da corrida, incluindo a criação de corredores, inicial
 
 ## Considerações Finais
 
-O **RaceCondition** é uma jogo que usa muito bem dos conceitos de **threads** e **semaforos** em C++. Através da simulação de uma corrida de Fórmula 1, o projeto demonstra como gerenciar a concorrência e a sincronização entre múltiplas threads, evitando sempre a RaceCondition.
+O **RaceCondition** é um jogo que usa muito bem dos conceitos de **threads** e **semaforos** em C++. Através da simulação de uma corrida de Fórmula 1, o projeto demonstra como gerenciar a concorrência e a sincronização entre múltiplas threads, evitando sempre a RaceCondition.
 
 ### Colaboradores
 
