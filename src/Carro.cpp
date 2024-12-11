@@ -60,8 +60,8 @@ string Carro::getNomeCarro(){
 //gente, é assim que faz inicialização em C++, se n fizer assim pode dar ruim (principalmente com o semáforo)
 Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro) 
     : pneu(new Pneu(tipoPneu)),
-      distanciaPercorrida(0.0),
-      pitstopMutex(Semaforo),
+      distanciaPercorrida(0.0), //setar a distância percorrida inicial como 0
+      pitstopMutex(Semaforo), //pegar o semáforo
       nome(Nome),
       OrdemDeChegada(OrdemDeChegadaSemaforo),
       PosicaoDoCarro(PosicaoDoCarro)

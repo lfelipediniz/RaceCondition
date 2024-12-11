@@ -1,5 +1,5 @@
 # RaceCondition - Manual do Jogo
-![Capa do Jogo](./imgs/racecondition.png)
+![Capa do Jogo](/imgs/racecondition.png)
 
 ## Índice
 1. [Introdução](#introdução)

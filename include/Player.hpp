@@ -22,18 +22,18 @@ private:
     mutex &pitstopMutex; //mutex para o pitstop
     mutex &OrdemDeChegada; //mutex para a linha de chegada
 
-    string nome;
-    Carro *carro;
-    
-    atomic <int> &PosicaoDoCarro;
+    atomic <int> &PosicaoDoCarro; //variável atomica para ver a posição do carro quando ele passa na linha de chegada
+
+    string nome; //nome do jogador
+    Carro *carro; //carro do jogador
 
 public:
-    Player(string nome, char tipoPneuInicial, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro);
-    ~Player();
+    Player(string nome, char tipoPneuInicial, mutex &Semaforo, mutex &OrdemDeChegadaSemaforo, atomic <int> &PosicaoDoCarro); //construtor
+    ~Player(); //quando ele for distruido
 
-    string getNome();    
-    Carro *getCarro();   
-    void controlar();
+    string getNome(); //retornar o nome
+    Carro *getCarro(); //retornar o carro   
+    void controlar(); //controlar o carro
 };
 
 #endif
