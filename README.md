@@ -25,8 +25,6 @@ O objetivo é proporcionar uma experiência interativa onde o jogador deve geren
 - **Compilador C++:** GCC ou Clang com suporte a C++20.
 - **Make:** Utilitário de construção para compilar o projeto.
 
-
-
 ## Instalação
 
 ### Clone o repositório
@@ -79,7 +77,7 @@ make run
 
 - **Condições de Vitória:**
   - A corrida termina quando todos os corredores passem pela linha de chegada ou sejam desclassificados.
-  - Se um pneu estourar (desgaste atingir 10), o carro é desclassificado da corrida.
+  - Se um pneu estourar (desgaste atingir 10), o carro é desclassificado da corrida. Quando isso acontece, um X irá aparecer na situação do piloto para indicar que ele está fora.
 
 <p align="center">
   <img src="/imgs/meio_da_corrida.jpeg" alt="Meio da corrida">
@@ -172,10 +170,10 @@ As **threads** permitem a execução simultânea de diferentes partes do program
    - Todos os carros possuem uma thread para correr na pista.
 
 2. **Threads das IAs**
-   - Cada carro controlado por IA possui tem uma thread que o controla para gerenciar a estratégias de pit stop.
+   - Cada carro das IAs vai ter uma thread com um contralador que vai decidir quando ele deve entrar no pit e qual pneu ele vai colocar.
 
 3. **Thread do Jogador**
-   - Monitora as entradas do usuário para realizar pit stops no carro do usuário.
+   - É uma thread que irá monitorar a entrada do usuário para verificar quando o jogador quer entrar no pit, qual tipo de pneu quer colocar e dessa forma controlar o carro em relação a entrada no pit.
 
 4. **Thread de Desenho da Pista**
    - Atualiza a visualização da pista e da tabela de classificação em tempo real.
@@ -186,7 +184,7 @@ Os **semaforos** são usados para controlar o acesso a recursos compartilhados, 
 
 - **Semáforo do Pit Stop**
   - Usa o `std::mutex`.
-  - Garante que apenas um carro (jogador ou IA) possa fazer um pit stop por vez.
+  - Garante que apenas um carro (jogador ou IA) possa usar o pit stop por vez.
   - Quando um carro entra no pit stop, o mutex é bloqueado, impedindo que outros carros acessem o pit stop simultaneamente.
   - Após a conclusão do pit stop, o mutex é liberado, assim permitido que outro carro utilize o pit stop.
 
@@ -205,6 +203,7 @@ Os **semaforos** são usados para controlar o acesso a recursos compartilhados, 
 - **Semáforos**
   - Garantem a sincronização adequada no acesso ao pit stop e da linha de chegada.
   - Evitam condições de corrida onde múltiplos carros tentam acessar o pit stop ou a linha de chegada ao mesmo tempo, o que poderia causar RaceCondition.
+  - A escolha do semáforo mutex foi feita para ambos os casos, pois só existia a necessiade do semáforo assumir valores 0 e 1.
 
 ### Fluxo de Funcionamento
 
@@ -220,7 +219,7 @@ Os **semaforos** são usados para controlar o acesso a recursos compartilhados, 
    - Enquanto o pit stop está ocupado, outros pilotos que tentarem realizar um pit stop serão bloqueados até que o mutex seja liberado.
 
 4. **Passagem pela Linha de Chegada**
-   - Quando um carro chega na linha de chegada o mesmo tenta pegar o mutex 'OrdemDeChegada'.
+   - Quando um carro chega na linha de chegada o mesmo tenta pegar o mutex `OrdemDeChegada`.
    - Se o mutex for capturado com sucesso, o carro entra passa pela linha de chegada, é marcado que finalizou a corrida e libera a região crítica.
 
 5. **Finalização da Corrida**
