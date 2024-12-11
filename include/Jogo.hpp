@@ -7,6 +7,7 @@
 #include <thread>
 #include <atomic>
 #include <vector>
+#include <semaphore>
 
 using namespace std;
 
@@ -14,6 +15,8 @@ class Jogo{
     private:
         Player *jogador;
         mutex pitstopMutex;
+        counting_semaphore<5> OrdemDeChegada{5};
+
 
     public:
         vector<thread> threads;

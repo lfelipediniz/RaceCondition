@@ -5,6 +5,7 @@
 #include <string>
 #include <mutex>
 #include <atomic>
+#include <semaphore>
 
 // velocidades base dos pneus
 #define S 2.0
@@ -34,14 +35,15 @@ public:
     string nome;
     atomic<bool> DentroPitStop;
     atomic <bool> ChegouNaLargada;
+    counting_semaphore<5> &OrdemDeChegada;
     
 
-    Carro(char tipoPneu, mutex &pitstopMutex, string Nome);
+    Carro(char tipoPneu, mutex &pitstopMutex, string Nome, counting_semaphore<5> &OrdemDeChegada);
     ~Carro(); // libera memória do pneu
 
     void fazerPitStop(char novoPneu);
     void correr();                    // simulação do carro correndo
-    string GetNomeCarro();
+    string getNomeCarro();
 };
 
 #endif

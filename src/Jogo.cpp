@@ -10,7 +10,7 @@ using namespace std;
 
 //construtor
 Jogo::Jogo(string nomeJogador, char pneuInicial) {
-    this->jogador = new Player(nomeJogador, pneuInicial, pitstopMutex); // começa com pneu médio
+    this->jogador = new Player(nomeJogador, pneuInicial, pitstopMutex, OrdemDeChegada); // começa com pneu médio
 }
 
 // desalocando o jogador
@@ -24,10 +24,10 @@ Jogo::~Jogo() {
 
 void Jogo::iniciar() {
 
-    IAs.emplace_back(new IA("Max Verstapo",  pitstopMutex));
-    IAs.emplace_back(new IA("Leo Leclerc", pitstopMutex));
-    IAs.emplace_back(new IA("Luiz Hamilltown", pitstopMutex));
-    IAs.emplace_back(new IA("Borboleto", pitstopMutex));
+    IAs.emplace_back(new IA("Max Verstapo",  pitstopMutex, OrdemDeChegada));
+    IAs.emplace_back(new IA("Leo Leclerc", pitstopMutex, OrdemDeChegada));
+    IAs.emplace_back(new IA("Luiz Hamilltown", pitstopMutex, OrdemDeChegada));
+    IAs.emplace_back(new IA("Borboleto", pitstopMutex, OrdemDeChegada));
 
 
 
@@ -74,13 +74,11 @@ void exibirTabela(const vector<Carro*> classificacao) {
     
     for (int i = 0; i < 5; ++i) {
         cout << "| " << setw(7) << (i + 1) << " | "
-                  << classificacao[i]->GetNomeCarro() << setw(23 - classificacao[i]->GetNomeCarro().size()) << " | "
+                  << classificacao[i]->getNomeCarro() << setw(23 - classificacao[i]->getNomeCarro().size()) << " | "
                   << setw(13) << classificacao[i]->pneu->desgaste << " | "
                   << setw(9) << classificacao[i]->pneu->tipo << " | "
                   << setw(9) <<(classificacao[i]->DentroPitStop.load() ? "Sim" : "Nao") << " |\n";
     }
-
-
     cout << "+---------+----------------------+---------------+-----------+-----------+\n";
 }
 
@@ -94,25 +92,14 @@ void limparTerminal() {
 
 // printando a pista com os carrinhos em suas posições
 void Jogo::desenharPista(const vector<Carro*> carros) {
-    while (true){
+    while (true) {
         limparTerminal();
         
         int tamanho_visivel = 50; 
 
         cout << "\nPista:\n";
         for (const auto &carro : carros) { //isso daqui GERA race condition
-            if (carro->ChegouNaLargada.load()){
-                int contador = 0;
-
-                for (const auto &carroj : carros) {
-                    if (carroj->ChegouNaLargada.load()) contador += 1;
-                }
-
-                float ValorAtual = carro->distanciaPercorrida.load();
-                while (!carro->distanciaPercorrida.compare_exchange_weak(ValorAtual, ValorAtual + 1000/contador));
-            }
-            
-            cout << carro->GetNomeCarro() << ": " << setw(20 - carro->GetNomeCarro().size());
+            cout << carro->getNomeCarro() << ": " << setw(20 - carro->getNomeCarro().size());
             cout << "🏁";
 
             // calculadno a posição na pista visível (1 traço para cada 2 unidades percorridas)

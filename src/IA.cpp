@@ -30,10 +30,10 @@ char PneuAleatorio(){
     return NovoPneu;
 }
 
-IA::IA(string nome, mutex &Semaforo): pitstopMutex(Semaforo) {
+IA::IA(string nome, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo)  {
     this->nome = nome;
     char tipoPneuInicial = PneuAleatorio();
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome);
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada);
 
     this->ResetarPneu = GerarValorAleatorio(2, 9); //gerar aleatoriamente quando que o pneu deve ser resetado
 }

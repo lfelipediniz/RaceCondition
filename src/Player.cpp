@@ -5,9 +5,9 @@
 
 using namespace std;
 
-Player::Player(string nome, char tipoPneuInicial, mutex &Semaforo): pitstopMutex(Semaforo) {
+Player::Player(string nome, char tipoPneuInicial, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo): pitstopMutex(Semaforo), OrdemDeChegada(OrdemDeChegadaSemaforo) {
     this->nome = nome;
-    this->carro = new Carro(tipoPneuInicial, Semaforo, nome);
+    this->carro = new Carro(tipoPneuInicial, Semaforo, nome, OrdemDeChegada);
 }
 
 Player::~Player(){

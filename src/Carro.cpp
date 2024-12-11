@@ -39,16 +39,17 @@ void Pneu::desgastar() {
     }
 }
 
-string Carro::GetNomeCarro(){
+string Carro::getNomeCarro(){
     return this->nome;
 }
 
 //gente, é assim que faz inicialização em C++, se n fizer assim pode dar ruim (principalmente com o semáforo)
-Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome) 
+Carro::Carro(char tipoPneu, mutex &Semaforo, string Nome, counting_semaphore<5> &OrdemDeChegadaSemaforo) 
     : pneu(new Pneu(tipoPneu)),
       distanciaPercorrida(0.0),
       pitstopMutex(Semaforo),
-      nome(Nome)
+      nome(Nome),
+      OrdemDeChegada(OrdemDeChegadaSemaforo)
     {
         this->DentroPitStop.store(false);
         this->ChegouNaLargada.store(false);
@@ -89,6 +90,10 @@ void Carro::correr(){
             while (!distanciaPercorrida.compare_exchange_weak(ValorAtual, ValorAtual + pneu->calcularVelocidade()));
             
             if (distanciaPercorrida > DISTANCIA_TOTAL) {
+                float ValorAtual = distanciaPercorrida.load();
+                while (!distanciaPercorrida.compare_exchange_weak(ValorAtual, ValorAtual + pneu->calcularVelocidade()));
+
+
                 this->ChegouNaLargada.store(true);
                 break;
             }

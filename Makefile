@@ -7,7 +7,7 @@ BUILD_DIR := build
 INCLUDE_DIR := include
 
 # flags de compilação
-CXXFLAGS := -Wall -Wextra -std=c++17 -I$(INCLUDE_DIR)
+CXXFLAGS := -Wall -Wextra -std=c++20 -I$(INCLUDE_DIR)
 
 # arquivos fonte e objetos
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)

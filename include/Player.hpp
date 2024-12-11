@@ -13,9 +13,10 @@ private:
     string nome;
     Carro *carro;
     mutex &pitstopMutex;
+    counting_semaphore<5> &OrdemDeChegada;
 
 public:
-    Player(string nome, char tipoPneuInicial, mutex &Semaforo);
+    Player(string nome, char tipoPneuInicial, mutex &Semaforo, counting_semaphore<5> &OrdemDeChegadaSemaforo);
     ~Player();
 
     string getNome();    
