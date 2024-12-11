@@ -85,7 +85,7 @@ make run
 Quando oa corrida acaba, uma mensagem é exibida com os resultados finais e você será convidado a finalizar o jogo.
 
 <p align="center">
-  <img src="/imgs/meio_da_corrida.jpeg" alt="Capa do jogo" width="300">
+  <img src="/imgs/meio_da_corrida.jpeg" alt="Capa do jogo">
 </p>
 
 ## Cálculos e Lógica do Jogo
