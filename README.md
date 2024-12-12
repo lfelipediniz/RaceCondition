@@ -305,3 +305,11 @@ Manages the overall state of the race, including creating racers, initializing t
 
 ---
 **Good race! 🏎️🏁**
+
+This project was developed as part of the **Operating Systems** course. For more info about the course, visit: [Operating Systems - USP](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=SSC0140&codcur=55041&codhab=0)
+
+A video presentation of this project is available on YouTube: [Watch the Presentation](https://www.youtube.com/watch?v=Tc_-pMtgpi4&t)
+
+---
+
+
